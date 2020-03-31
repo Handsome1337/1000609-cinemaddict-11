@@ -5,7 +5,7 @@ const MOVIE_EXTRA_COUNT = 2;
 
 /* Перечисление вариантов вставки элемента */
 const RenderPosition = {
-  BEFOREEND: 'beforeend'
+  BEFOREEND: `beforeend`
 };
 
 const createUserRankTemplate = () => {
@@ -281,34 +281,36 @@ const createElement = (template) => {
   return newElement.firstChild;
 };
 
-const siteHeaderElement = document.querySelector('.header');
-const siteMainElement = document.querySelector('.main');
+const siteHeaderElement = document.querySelector(`.header`);
+const siteMainElement = document.querySelector(`.main`);
 
 render(siteHeaderElement, createElement(createUserRankTemplate()));
 render(siteMainElement, createElement(createSiteMenuTemplate()));
 render(siteMainElement, createElement(createSortTemplate()));
 render(siteMainElement, createElement(createMovieListTemplate()));
 
-const moviePageElement = siteMainElement.querySelector('.films');
-const movieListElement = moviePageElement.querySelector('.films-list');
-const majorMovieListElement = movieListElement.querySelector('.films-list__container');
+const moviePageElement = siteMainElement.querySelector(`.films`);
+const movieListElement = moviePageElement.querySelector(`.films-list`);
+const majorMovieListElement = movieListElement.querySelector(`.films-list__container`);
 
 new Array(MOVIE_COUNT)
-  .fill('')
+  .fill(``)
   .forEach(() => {
     render(majorMovieListElement, createElement(createMovieCardTemplate()));
   });
 
 render(movieListElement, createElement(createShowMoreButtonTemplate()));
 
-render(moviePageElement, createElement(createExtraMovieListTemplate('Top rated')));
-render(moviePageElement, createElement(createExtraMovieListTemplate('Most commented')));
+render(moviePageElement, createElement(createExtraMovieListTemplate(`Top rated`)));
+render(moviePageElement, createElement(createExtraMovieListTemplate(`Most commented`)));
 
-const [topRatedMovieListElement, mostCommentedMovieListElement] = document.querySelectorAll('.films-list--extra .films-list__container');
+const [topRatedMovieListElement, mostCommentedMovieListElement] = document.querySelectorAll(`.films-list--extra .films-list__container`);
 
 new Array(MOVIE_EXTRA_COUNT)
-  .fill('')
+  .fill(``)
   .forEach(() => {
     render(topRatedMovieListElement, createElement(createMovieCardTemplate()));
     render(mostCommentedMovieListElement, createElement(createMovieCardTemplate()));
   });
+
+render(document.body, createElement(createMovieDetailsTemplate()));
