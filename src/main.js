@@ -77,6 +77,17 @@ const createShowMoreButtonTemplate = () => {
   return `<button class="films-list__show-more">Show more</button>`;
 };
 
+const createExtraMovieListTemplate = (title) => {
+  return (
+    `<section class="films-list--extra">
+      <h2 class="films-list__title">${title}</h2>
+
+      <div class="films-list__container">
+      </div>
+    </section>`
+  );
+};
+
 const createMovieDetailsTemplate = () => {
   return (
     `<section class="film-details">
