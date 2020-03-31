@@ -1,5 +1,8 @@
 "use strict";
 
+const MOVIE_COUNT = 5;
+const MOVIE_EXTRA_COUNT = 2;
+
 /* Перечисление вариантов вставки элемента */
 const RenderPosition = {
   BEFOREEND: 'beforeend'
@@ -270,3 +273,42 @@ const render = (container, component, place = RenderPosition.BEFOREEND) => {
       container.append(component);
   }
 };
+
+/* Возвращает DOM-элемент на основе переданной в параметр разметки шаблона */
+const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+  return newElement.firstChild;
+};
+
+const siteHeaderElement = document.querySelector('.header');
+const siteMainElement = document.querySelector('.main');
+
+render(siteHeaderElement, createElement(createUserRankTemplate()));
+render(siteMainElement, createElement(createSiteMenuTemplate()));
+render(siteMainElement, createElement(createSortTemplate()));
+render(siteMainElement, createElement(createMovieListTemplate()));
+
+const moviePageElement = siteMainElement.querySelector('.films');
+const movieListElement = moviePageElement.querySelector('.films-list');
+const majorMovieListElement = movieListElement.querySelector('.films-list__container');
+
+new Array(MOVIE_COUNT)
+  .fill('')
+  .forEach(() => {
+    render(majorMovieListElement, createElement(createMovieCardTemplate()));
+  });
+
+render(movieListElement, createElement(createShowMoreButtonTemplate()));
+
+render(moviePageElement, createElement(createExtraMovieListTemplate('Top rated')));
+render(moviePageElement, createElement(createExtraMovieListTemplate('Most commented')));
+
+const [topRatedMovieListElement, mostCommentedMovieListElement] = document.querySelectorAll('.films-list--extra .films-list__container');
+
+new Array(MOVIE_EXTRA_COUNT)
+  .fill('')
+  .forEach(() => {
+    render(topRatedMovieListElement, createElement(createMovieCardTemplate()));
+    render(mostCommentedMovieListElement, createElement(createMovieCardTemplate()));
+  });
