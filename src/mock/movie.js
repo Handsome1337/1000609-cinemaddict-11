@@ -209,7 +209,8 @@ const generateDescription = (text) => {
 
 const generateMovie = () => {
   /* Получаем объект, где ключ - оригинальное название фильма, значение - альтернативное название */
-  const title = getRandomArrayItem([...titles]);
+  const title = getRandomArrayItem([...titles]);  
+  const isWatched = Math.random() > 0.7;
 
   return {
     id: String(new Date() + Math.random()),
@@ -231,5 +232,11 @@ const generateMovie = () => {
       genre: new Set(generateGenres(genres)),
       description: generateDescription(description)
     },
+    user_details: {
+      watchling: Math.random() > 0.6,
+      already_watched: isWatched,
+      watching_date: isWatched ? getRandomDate() : null,
+      favorite: Math.random() > 0.9
+    }
   };
 };
