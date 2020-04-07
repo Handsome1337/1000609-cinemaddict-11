@@ -23,6 +23,37 @@ const getRandomDate = () => {
   return date;
 };
 
+const commentators = [
+  `Злой тролль из интернета`,
+  `Обычный пользователь`,
+  `БэдКомедиан`,
+  `Киноблоггер с Ютуба`,
+  `Недовольный зритель`,
+  `Клиент кинотеатра`,
+  `Диванный эксперт`,
+  `Недокритик`
+];
+
+const comments = [
+  `Очень плохой фильм`,
+  `Плохой фильм`,
+  `Норм фильм`,
+  `Неплохой фильм`,
+  `Хороший фильм`,
+  `Олтичный фильм`,
+  `Шикарный фильм`,
+  `Идеальный фильм`,
+  `MUST SEE`,
+  `Отвратительный фильм`
+];
+
+const emotions = [
+  `smile`,
+  `sleeping`,
+  `puke`,
+  `angry`
+];
+
 const titles = new Set([
   {"El Camino: A Breaking Bad Movie": `El Camino: Во все тяжкие`},
   {"American Pie": `Американский пирог`},
@@ -146,6 +177,20 @@ const genres = [
 
 const description = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`;
 
+/* Возвращает массив случайных комментариев */
+const generateComments = (count) => {
+  return new Array(count)
+    .fill(``)
+    .map(() => {
+      return {
+        id: String(new Date() + Math.random()),
+        author: getRandomArrayItem(commentators),
+        comment: getRandomArrayItem(comments),
+        date: getRandomDate(),
+        emotion: getRandomArrayItem(emotions)
+      };
+    });
+};
 /* Возвращает случайный массив от 1 до 3 сценаристов */
 const generateWriters = (screenWriters) => getShuffledAndSlicedArr(screenWriters, 1, 3);
 /* Возвращает случайный массив от 2 до 4 актёров */
@@ -168,10 +213,11 @@ const generateMovie = () => {
 
   return {
     id: String(new Date() + Math.random()),
+    comments: generateComments(getRandomInt(0, 5)), // думаю, магические числа в моках не проблема - этих файлов уже не будет на защите
     film_info: {
       title: Object.keys(title)[0],
       alternative_title: Object.values(title)[0],
-      total_rating: getRandomInt(0, 9), // думаю, магические числа в моках не проблема - этих файлов уже не будет на защите
+      total_rating: getRandomInt(0, 9),
       poster: getRandomArrayItem(posters),
       age_rating: getRandomArrayItem(ageRatings),
       director: getRandomArrayItem(directors),
