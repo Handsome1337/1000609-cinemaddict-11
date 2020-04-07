@@ -199,7 +199,7 @@ const generateActors = (movieActors) => getShuffledAndSlicedArr(movieActors, 2, 
 const generateGenres = (movieGenres) => getShuffledAndSlicedArr(movieGenres, 1, 4);
 /* Возвращает случайное описание фильма от 1 до 5 предложений */
 const generateDescription = (text) => {
-  /* Удаляет точку у последнего предложения, чтобы все предложения попали в массив без точек. Затем создаёт массив из предложений */  
+  /* Удаляет точку у последнего предложения, чтобы все предложения попали в массив без точек. Затем создаёт массив из предложений */
   const sentences = text.slice(0, -1).split(`. `);
   const desc = getShuffledAndSlicedArr(sentences, 1, 5);
 
@@ -209,34 +209,42 @@ const generateDescription = (text) => {
 
 const generateMovie = () => {
   /* Получаем объект, где ключ - оригинальное название фильма, значение - альтернативное название */
-  const title = getRandomArrayItem([...titles]);  
+  const title = getRandomArrayItem([...titles]);
   const isWatched = Math.random() > 0.7;
 
   return {
     id: String(new Date() + Math.random()),
     comments: generateComments(getRandomInt(0, 5)), // думаю, магические числа в моках не проблема - этих файлов уже не будет на защите
-    film_info: {
+    filmInfo: {
       title: Object.keys(title)[0],
-      alternative_title: Object.values(title)[0],
-      total_rating: getRandomInt(0, 9),
+      alternativeTitle: Object.values(title)[0],
+      totalRating: getRandomInt(0, 9),
       poster: getRandomArrayItem(posters),
-      age_rating: getRandomArrayItem(ageRatings),
+      ageRating: getRandomArrayItem(ageRatings),
       director: getRandomArrayItem(directors),
-      writers: new Set(generateScreenwriters(writers)),
-      actors: new Set(generateActors(filmActors)),
+      writers: new Set(generateWriters(writers)),
+      actors: new Set(generateActors(actors)),
       release: {
         date: getRandomDate(),
-        release_country: getRandomArrayItem(countries)
+        releaseCountry: getRandomArrayItem(countries)
       },
       runtime: getRandomInt(45, 275),
       genre: new Set(generateGenres(genres)),
       description: generateDescription(description)
     },
-    user_details: {
-      watchling: Math.random() > 0.6,
-      already_watched: isWatched,
-      watching_date: isWatched ? getRandomDate() : null,
-      favorite: Math.random() > 0.9
+    userDetails: {
+      watchlist: isWatched ? false : Math.random() > 0.5,
+      alreadyWatched: isWatched,
+      watchingDate: isWatched ? getRandomDate() : null,
+      favorite: isWatched ? Math.random() > 0.5 : false
     }
   };
 };
+
+const generateMovies = (count) => {
+  return new Array(count)
+    .fill(``)
+    .map(generateMovie);
+};
+
+export {generateMovies};

@@ -7,7 +7,9 @@ import {createShowMoreButtonTemplate} from './components/show-more-button.js';
 import {createExtraMovieListTemplate} from './components/extra-movie-list.js';
 import {createMovieDetailsTemplate} from './components/movie-details.js';
 
-const MOVIE_COUNT = 5;
+import {generateMovies} from './mock/movie.js';
+
+const MOVIE_COUNT = 22;
 const MOVIE_EXTRA_COUNT = 2;
 
 /* Перечисление вариантов вставки элемента */
@@ -30,6 +32,8 @@ const createElement = (template) => {
   newElement.innerHTML = template;
   return newElement.firstChild;
 };
+
+const movies = generateMovies(MOVIE_COUNT);
 
 const siteHeaderElement = document.querySelector(`.header`);
 const siteMainElement = document.querySelector(`.main`);
