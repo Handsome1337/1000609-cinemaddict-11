@@ -18,6 +18,16 @@ const buttonPropsMap = new Map([
   }]
 ]);
 
+/* Удаляет символ пробела, точки или запятой, если краткое описание закончилось на один из этих символов */
+const formatDescription = (desc) => {
+  let formattedDesc = desc;
+  if (formattedDesc.match(/[\s.,]$/)) { // не силён в регулярках, если можно сделать проверку последнего символа без рекурсии, подскажи, пожалуйста
+    formattedDesc = formatDescription(formattedDesc.replace(/[\s.,]$/, ``));
+  }
+
+  return formattedDesc;
+};
+
 const createButtonsMarkup = (userDetails) => {
   return [...buttonPropsMap.entries()] // преобразует итератор в массив
     .map(([prop, values]) => { // с помощью деструктуризации вытаскивает название свойства и объект со значениями модификатора и текста
@@ -42,8 +52,8 @@ export const createMovieCardTemplate = (movie) => {
   const duration = formatRuntime(runtime);
   const mainGenre = Array.from(genre)[0];
 
-  /* Если длина описания фильма превышает норму, форматирует его (вдобавок удаляет символ пробела, точки или запятой, если отформатированное описание закончилось на один из этих символов) */
-  const formattedDescription = isDescriptionExcess ? `${description.slice(0, DESCRIPTION_MAX_LENGTH - 1).replace(/[\s,.]$/, ``)}…` : description;
+  /* Если длина описания фильма превышает норму, форматирует его */
+  const formattedDescription = isDescriptionExcess ? `${formatDescription(description.slice(0, DESCRIPTION_MAX_LENGTH - 1))}…` : description;
 
   const buttonsMarkup = createButtonsMarkup(userDetails);
 
