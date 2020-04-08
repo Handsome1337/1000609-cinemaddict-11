@@ -28,19 +28,24 @@ const render = (container, component, place = RenderPosition.BEFOREEND) => {
 
 /* Возвращает DOM-элемент на основе переданной в параметр разметки шаблона */
 const createElement = (template) => {
+  if (!template) {
+    return ``;
+  }
+
   const newElement = document.createElement(`div`);
   newElement.innerHTML = template;
   return newElement.firstChild;
 };
 
 const movies = generateMovies(MOVIE_COUNT);
+const moviesCount = movies.length;
 const topRatedMovies = [...movies].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating).slice(0, 2);
 const mostCommentedMovies = [...movies].sort((a, b) => b.comments.length - a.comments.length).slice(0, 2);
 
 const siteHeaderElement = document.querySelector(`.header`);
 const siteMainElement = document.querySelector(`.main`);
 
-render(siteHeaderElement, createElement(createUserRankTemplate()));
+render(siteHeaderElement, createElement(createUserRankTemplate(moviesCount)));
 render(siteMainElement, createElement(createSiteMenuTemplate()));
 render(siteMainElement, createElement(createSortingTemplate()));
 render(siteMainElement, createElement(createMovieListTemplate()));
@@ -65,6 +70,6 @@ mostCommentedMovies.forEach((movie) => render(mostCommentedMovieListElement, cre
 
 const footerStatisticsElement = document.querySelector(`.footer__statistics`);
 
-render(footerStatisticsElement, createElement(createMovieCounterTemplate(movies.length)));
+render(footerStatisticsElement, createElement(createMovieCounterTemplate(moviesCount)));
 
 // render(document.body, createElement(createMovieDetailsTemplate()));
