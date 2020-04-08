@@ -6,6 +6,7 @@ import {createMovieCardTemplate} from './components/movie-card.js';
 import {createShowMoreButtonTemplate} from './components/show-more-button.js';
 import {createExtraMovieListTemplate} from './components/extra-movie-list.js';
 // import {createMovieDetailsTemplate} from './components/movie-details.js';
+import {createMovieCounterTemplate} from './components/movie-counter.js';
 
 import {generateMovies} from './mock/movie.js';
 
@@ -61,5 +62,9 @@ const [topRatedMovieListElement, mostCommentedMovieListElement] = document.query
 
 topRatedMovies.forEach((movie) => render(topRatedMovieListElement, createElement(createMovieCardTemplate(movie))));
 mostCommentedMovies.forEach((movie) => render(mostCommentedMovieListElement, createElement(createMovieCardTemplate(movie))));
+
+const footerStatisticsElement = document.querySelector(`.footer__statistics`);
+
+render(footerStatisticsElement, createElement(createMovieCounterTemplate(movies.length)));
 
 // render(document.body, createElement(createMovieDetailsTemplate()));
