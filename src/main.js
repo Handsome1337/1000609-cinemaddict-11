@@ -9,6 +9,7 @@ import {createExtraMovieListTemplate} from './components/extra-movie-list.js';
 import {createMovieCounterTemplate} from './components/movie-counter.js';
 
 import {generateMovies} from './mock/movie.js';
+import {generateFilters} from './mock/filter.js';
 
 const MOVIE_COUNT = 22;
 
@@ -39,6 +40,7 @@ const createElement = (template) => {
 
 const movies = generateMovies(MOVIE_COUNT);
 const moviesCount = movies.length;
+const filters = generateFilters();
 const topRatedMovies = [...movies].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating).slice(0, 2);
 const mostCommentedMovies = [...movies].sort((a, b) => b.comments.length - a.comments.length).slice(0, 2);
 
@@ -46,7 +48,7 @@ const siteHeaderElement = document.querySelector(`.header`);
 const siteMainElement = document.querySelector(`.main`);
 
 render(siteHeaderElement, createElement(createUserRankTemplate(moviesCount)));
-render(siteMainElement, createElement(createSiteMenuTemplate()));
+render(siteMainElement, createElement(createSiteMenuTemplate(filters)));
 render(siteMainElement, createElement(createSortingTemplate()));
 render(siteMainElement, createElement(createMovieListTemplate()));
 
