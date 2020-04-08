@@ -16,7 +16,7 @@ const formatDate = (date, format = false) => {
   const month = date.getMonth();
   const day = castDateFormat(date.getDate());
   const hour = date.getHours();
-  const minute = date.getMinutes();
+  const minute = castDateFormat(date.getMinutes());
 
   if (format === `comment`) {
     return `${year}/${castDateFormat(month + 1)}/${day} ${hour}:${minute}`;
