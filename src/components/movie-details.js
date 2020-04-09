@@ -77,7 +77,8 @@ const createReactionsMarkup = (emojis) => {
 
 
 export const createMovieDetailsTemplate = (movie) => {
-  const {title, alternativeTitle, totalRating: rating, poster, ageRating, director, writers, actors, release: {date, releaseCountry}, runtime, genre, description} = movie.filmInfo;
+  const {title, alternativeTitle, totalRating: rating, poster, ageRating, director, writers,
+    actors, release: {date, releaseCountry}, runtime, genre, description} = movie.filmInfo;
   const comments = movie.comments;
   const userDetails = movie.userDetails;
 

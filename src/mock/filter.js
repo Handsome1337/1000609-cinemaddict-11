@@ -1,11 +1,16 @@
-const filterNames = [`All movies`, `Watchlist `, `History `, `Favorites `];
+const filterMap = new Map([
+  [`All movies`, `id`],
+  [`Watchlist `, `watchlist`],
+  [`History`, `alreadyWatched`],
+  [`Favorites `, `favorite`]
+]);
 
-const generateFilters = () => {
-  return filterNames
-    .map((name) => {
+const generateFilters = (movies) => {
+  return [...filterMap.entries()]
+    .map(([name, movieProp], i) => {
       return {
         name,
-        count: Math.floor(Math.random() * 10)
+        count: i ? movies.filter((movie) => movie.userDetails[movieProp]).length : movies.filter((movie) => movie[movieProp]).length
       };
     });
 };

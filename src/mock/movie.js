@@ -1,7 +1,7 @@
 const getRandomArrayItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const getRandomInt = (min, max) => Math.floor(min + Math.random() * (max + 1 - min));
 /* Возвращает перетасованный массив */
-const getShuffledArr = (arr) => {
+const getShuffledArray = (arr) => {
   for (let i = arr.length - 1; i > 0; i--) {
     let j = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -9,7 +9,7 @@ const getShuffledArr = (arr) => {
   return arr;
 };
 /* Возвращает перетасованный и случайно обрезанный массив */
-const getShuffledAndSlicedArr = (arr, sliceStart, sliceEnd) => getShuffledArr(arr).slice(0, getRandomInt(sliceStart, sliceEnd));
+const getShuffledAndSlicedArray = (arr, sliceStart, sliceEnd) => getShuffledArray(arr).slice(0, getRandomInt(sliceStart, sliceEnd));
 const getRandomDate = () => {
   const date = new Date();
 
@@ -192,19 +192,19 @@ const generateComments = (count) => {
     });
 };
 /* Возвращает случайный массив от 1 до 3 сценаристов */
-const generateWriters = (screenWriters) => getShuffledAndSlicedArr(screenWriters, 1, 3);
+const generateWriters = (screenWriters) => getShuffledAndSlicedArray(screenWriters, 1, 3);
 /* Возвращает случайный массив от 2 до 4 актёров */
-const generateActors = (movieActors) => getShuffledAndSlicedArr(movieActors, 2, 4);
+const generateActors = (movieActors) => getShuffledAndSlicedArray(movieActors, 2, 4);
 /* Возвращает случайный массив от 1 до 4 жанров */
-const generateGenres = (movieGenres) => getShuffledAndSlicedArr(movieGenres, 1, 4);
+const generateGenres = (movieGenres) => getShuffledAndSlicedArray(movieGenres, 1, 4);
 /* Возвращает случайное описание фильма от 1 до 5 предложений */
 const generateDescription = (text) => {
   /* Удаляет точку у последнего предложения, чтобы все предложения попали в массив без точек. Затем создаёт массив из предложений */
   const sentences = text.slice(0, -1).split(`. `);
-  const desc = getShuffledAndSlicedArr(sentences, 1, 5);
+  const descSentences = getShuffledAndSlicedArray(sentences, 1, 5);
 
   /* Преобразовывает массив предложений массив в строку и добавляет точку последнему предложению */
-  return `${desc.join(`. `)}.`;
+  return `${descSentences.join(`. `)}.`;
 };
 
 const generateMovie = () => {

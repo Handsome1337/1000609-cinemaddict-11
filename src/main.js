@@ -42,7 +42,7 @@ const createElement = (template) => {
 
 const movies = generateMovies(MOVIE_COUNT);
 const moviesCount = movies.length;
-const filters = generateFilters();
+const filters = generateFilters(movies);
 const topRatedMovies = [...movies].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating).slice(0, 2);
 const mostCommentedMovies = [...movies].sort((a, b) => b.comments.length - a.comments.length).slice(0, 2);
 
