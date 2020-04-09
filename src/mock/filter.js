@@ -10,7 +10,7 @@ const generateFilters = (movies) => {
     .map(([name, movieProp], i) => {
       return {
         name,
-        count: i ? movies.filter((movie) => movie.userDetails[movieProp]).length : movies.filter((movie) => movie[movieProp]).length
+        count: i ? movies.filter((movie) => movie.userDetails[movieProp]).length : movies.length
       };
     });
 };
