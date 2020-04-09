@@ -20,27 +20,29 @@ const inputPropsMap = new Map([
 
 const createGenresMarkup = (genres) => {
   return [...genres]
-    .map((genre) => {
-      return `<span class="film-details__genre">${genre}</span>`;
-    })
-    .join(`\n`);
+    .reduce((acc, genre, i) => {
+      const newline = i === 0 ? `` : `\n`;
+      return `${acc}${newline}<span class="film-details__genre">${genre}</span>`;
+    }, ``);
 };
 
 const createControlsMarkup = (userDetails) => {
   return [...inputPropsMap.entries()] // преобразует итератор в массив
-    .map(([prop, values]) => { // с помощью деструктуризации вытаскивает название свойства и объект со значениями модификатора и текста
-      return (
+    .reduce((acc, [prop, values], i) => { // с помощью деструктуризации вытаскивает название свойства и объект со значениями модификатора и текста
+      const newline = i === 0 ? `` : `\n`;
+      const template = (
         `<input type="checkbox" class="film-details__control-input visually-hidden" id="${values.name}" name="${values.name}" ${userDetails[prop] ? `checked` : ``}>
         <label for="${values.name}" class="film-details__control-label film-details__control-label--${values.name}">${values.text}</label>`
       );
-    })
-    .join(`\n`);
+      return `${acc}${newline}${template}`;
+    }, ``);
 };
 
 const createCommentsMarkup = (comments) => {
   return comments
-    .map(({author, comment, date, emotion}) => {
-      return (
+    .reduce((acc, {author, comment, date, emotion}, i) => {
+      const newline = i === 0 ? `` : `\n`;
+      const template = (
         `<li class="film-details__comment">
           <span class="film-details__comment-emoji">
             <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
@@ -55,22 +57,24 @@ const createCommentsMarkup = (comments) => {
           </div>
         </li>`
       );
-    })
-    .join(`\n`);
+      return `${acc}${newline}${template}`;
+    }, ``);
 };
 
 const createReactionsMarkup = (emojis) => {
   return emojis
-    .map((emoji) => {
-      return (
+    .reduce((acc, emoji, i) => {
+      const newline = i === 0 ? `` : `\n`;
+      const template = (
         `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}">
         <label class="film-details__emoji-label" for="emoji-${emoji}">
           <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="emoji">
         </label>`
       );
-    })
-    .join(`\n`);
+      return `${acc}${newline}${template}`;
+    }, ``);
 };
+
 
 export const createMovieDetailsTemplate = (movie) => {
   const {title, alternativeTitle, totalRating: rating, poster, ageRating, director, writers, actors, release: {date, releaseCountry}, runtime, genre, description} = movie.filmInfo;

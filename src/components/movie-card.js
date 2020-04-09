@@ -30,14 +30,15 @@ const formatDescription = (desc) => {
 
 const createButtonsMarkup = (userDetails) => {
   return [...buttonPropsMap.entries()] // преобразует итератор в массив
-    .map(([prop, values]) => { // с помощью деструктуризации вытаскивает название свойства и объект со значениями модификатора и текста
-      return (
+    .reduce((acc, [prop, values], i) => { // с помощью деструктуризации вытаскивает название свойства и объект со значениями модификатора и текста
+      const newline = i === 0 ? `` : `\n`;
+      const template = (
         `<button class="film-card__controls-item button film-card__controls-item--${values.modifier} ${userDetails[prop] ? `film-card__controls-item--active` : ``}">
           ${values.text}
         </button>`
       );
-    })
-    .join(`\n`);
+      return `${acc}${newline}${template}`;
+    }, ``);
 };
 
 export const createMovieCardTemplate = (movie) => {
