@@ -1,11 +1,27 @@
-export const createSiteMenuTemplate = () => {
+const MAIN_FILTER = `All movies`;
+
+const createFiltersMarkup = (filters) => {
+  return filters
+    .reduce((acc, {name, count}, i) => {
+      const newline = i === 0 ? `` : `\n`;
+      const link = name.toLowerCase().split(` `)[0];
+      const isMainFilter = name === MAIN_FILTER;
+      const template = (
+        `<a href="#${link}" class="main-navigation__item ${isMainFilter ? `main-navigation__item--active` : ``}">
+          ${name}${isMainFilter ? `` : `<span class="main-navigation__item-count">${count}</span>`}
+        </a>`
+      );
+      return `${acc}${newline}${template}`;
+    }, ``);
+};
+
+export const createSiteMenuTemplate = (filters) => {
+  const filtersMarkup = createFiltersMarkup(filters);
+
   return (
     `<nav class="main-navigation">
       <div class="main-navigation__items">
-        <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
-        <a href="#watchlist" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">13</span></a>
-        <a href="#history" class="main-navigation__item">History <span class="main-navigation__item-count">4</span></a>
-        <a href="#favorites" class="main-navigation__item">Favorites <span class="main-navigation__item-count">8</span></a>
+        ${filtersMarkup}
       </div>
       <a href="#stats" class="main-navigation__additional">Stats</a>
     </nav>`
