@@ -1,15 +1,16 @@
-import {createUserRankTemplate} from './components/user-rank.js';
-import {createSiteMenuTemplate} from './components/site-menu.js';
-import {createSortingTemplate} from './components/sorting.js';
-import {createMovieListTemplate} from './components/movie-list.js';
-import {createMovieCardTemplate} from './components/movie-card.js';
-import {createShowMoreButtonTemplate} from './components/show-more-button.js';
-import {createExtraMovieListTemplate} from './components/extra-movie-list.js';
-import {createMovieDetailsTemplate} from './components/movie-details.js';
-import {createMovieCounterTemplate} from './components/movie-counter.js';
+import UserRankComponent from './components/user-rank.js';
+import SiteMenuComponent from './components/site-menu.js';
+import SortingComponent from './components/sorting.js';
+import MovieListComponent from './components/movie-list.js';
+import MovieCardComponent from './components/movie-card.js';
+import ShowMoreButtonComponent from './components/show-more-button.js';
+import ExtraMovieListComponent from './components/extra-movie-list.js';
+import MovieDetailsComponent from './components/movie-details.js';
+import MovieCounterComponent from './components/movie-counter.js';
 
 import {generateMovies} from './mock/movie.js';
 import {generateFilters} from './mock/filter.js';
+import {render} from './utils.js';
 
 const MOVIE_COUNT = 22;
 const SHOWING_MOVIES_COUNT_ON_START = 5;
@@ -24,10 +25,10 @@ const mostCommentedMovies = [...movies].sort((a, b) => b.comments.length - a.com
 const siteHeaderElement = document.querySelector(`.header`);
 const siteMainElement = document.querySelector(`.main`);
 
-render(siteHeaderElement, createElement(createUserRankTemplate(moviesCount)));
-render(siteMainElement, createElement(createSiteMenuTemplate(filters)));
-render(siteMainElement, createElement(createSortingTemplate()));
-render(siteMainElement, createElement(createMovieListTemplate()));
+render(siteHeaderElement, new UserRankComponent(moviesCount).getElement());
+render(siteMainElement, new SiteMenuComponent(filters).getElement());
+render(siteMainElement, new SortingComponent().getElement());
+render(siteMainElement, new MovieListComponent().getElement());
 
 const moviePageElement = siteMainElement.querySelector(`.films`);
 const movieListElement = moviePageElement.querySelector(`.films-list`);
@@ -38,10 +39,10 @@ let showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
 movies
   .slice(0, showingMoviesCount)
   .forEach((movie) => {
-    render(majorMovieListElement, createElement(createMovieCardTemplate(movie)));
+    render(majorMovieListElement, new MovieCardComponent(movie).getElement());
   });
 
-render(movieListElement, createElement(createShowMoreButtonTemplate()));
+render(movieListElement, new ShowMoreButtonComponent().getElement());
 
 const showMoreButtonElement = movieListElement.querySelector(`.films-list__show-more`);
 
@@ -52,7 +53,7 @@ showMoreButtonElement.addEventListener(`click`, () => {
   movies
     .slice(prevMoviesCount, showingMoviesCount)
     .forEach((movie) => {
-      render(majorMovieListElement, createElement(createMovieCardTemplate(movie)));
+      render(majorMovieListElement, new MovieCardComponent(movie).getElement());
     });
 
   if (showingMoviesCount >= moviesCount) {
@@ -60,16 +61,16 @@ showMoreButtonElement.addEventListener(`click`, () => {
   }
 });
 
-render(moviePageElement, createElement(createExtraMovieListTemplate(`Top rated`)));
-render(moviePageElement, createElement(createExtraMovieListTemplate(`Most commented`)));
+render(moviePageElement, new ExtraMovieListComponent(`Top rated`).getElement());
+render(moviePageElement, new ExtraMovieListComponent(`Most commented`).getElement());
 
 const [topRatedMovieListElement, mostCommentedMovieListElement] = document.querySelectorAll(`.films-list--extra .films-list__container`);
 
-topRatedMovies.forEach((movie) => render(topRatedMovieListElement, createElement(createMovieCardTemplate(movie))));
-mostCommentedMovies.forEach((movie) => render(mostCommentedMovieListElement, createElement(createMovieCardTemplate(movie))));
+topRatedMovies.forEach((movie) => render(topRatedMovieListElement, new MovieCardComponent(movie).getElement()));
+mostCommentedMovies.forEach((movie) => render(mostCommentedMovieListElement, new MovieCardComponent(movie).getElement()));
 
 const footerStatisticsElement = document.querySelector(`.footer__statistics`);
 
-render(footerStatisticsElement, createElement(createMovieCounterTemplate(moviesCount)));
+render(footerStatisticsElement, new MovieCounterComponent(moviesCount).getElement());
 
-render(document.body, createElement(createMovieDetailsTemplate(movies[0])));
+render(document.body, new MovieDetailsComponent(movies[0]).getElement());
