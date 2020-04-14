@@ -1,4 +1,4 @@
-import {formatRuntime, formatDate} from './../utils.js';
+import {formatRuntime, formatDate, createElement} from './../utils.js';
 
 const EMOTIONS = [`smile`, `sleeping`, `puke`, `angry`];
 
@@ -76,7 +76,7 @@ const createReactionsMarkup = (emojis) => {
 };
 
 
-export const createMovieDetailsTemplate = (movie) => {
+const createMovieDetailsTemplate = (movie) => {
   const {title, alternativeTitle, totalRating: rating, poster, ageRating, director, writers,
     actors, release: {date, releaseCountry}, runtime, genre, description} = movie.filmInfo;
   const comments = movie.comments;
@@ -185,3 +185,27 @@ export const createMovieDetailsTemplate = (movie) => {
     </section>`
   );
 };
+
+export default class MovieDetails {
+  constructor(movie) {
+    this._movie = movie;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMovieDetailsTemplate(this._movie);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

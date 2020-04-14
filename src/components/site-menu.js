@@ -1,3 +1,5 @@
+import {createElement} from './../utils.js';
+
 const MAIN_FILTER = `All movies`;
 
 const createFiltersMarkup = (filters) => {
@@ -15,7 +17,7 @@ const createFiltersMarkup = (filters) => {
     }, ``);
 };
 
-export const createSiteMenuTemplate = (filters) => {
+const createSiteMenuTemplate = (filters) => {
   const filtersMarkup = createFiltersMarkup(filters);
 
   return (
@@ -27,3 +29,27 @@ export const createSiteMenuTemplate = (filters) => {
     </nav>`
   );
 };
+
+export default class SiteMenu {
+  constructor(filters) {
+    this._filters = filters;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createSiteMenuTemplate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

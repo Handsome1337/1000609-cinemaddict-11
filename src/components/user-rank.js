@@ -1,3 +1,5 @@
+import {createElement} from './../utils.js';
+
 const createRankMarkup = (watchedMoviesCount) => {
   const template = (text) => `<p class="profile__rating">${text}</p>`;
 
@@ -10,7 +12,7 @@ const createRankMarkup = (watchedMoviesCount) => {
   }
 };
 
-export const createUserRankTemplate = (count) => {
+const createUserRankTemplate = (count) => {
   if (count < 1) {
     return ``;
   }
@@ -24,3 +26,27 @@ export const createUserRankTemplate = (count) => {
     </section>`
   );
 };
+
+export default class UserRank {
+  constructor(count) {
+    this._count = count;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createUserRankTemplate(this._count);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

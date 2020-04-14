@@ -1,4 +1,4 @@
-import {formatRuntime, formatDate} from './../utils.js';
+import {formatRuntime, formatDate, createElement} from './../utils.js';
 
 const DESCRIPTION_MAX_LENGTH = 140;
 const DESCRIPTION_END_CHECK = /[\s.,]$/;
@@ -42,7 +42,7 @@ const createButtonsMarkup = (userDetails) => {
     }, ``);
 };
 
-export const createMovieCardTemplate = (movie) => {
+const createMovieCardTemplate = (movie) => {
   const {alternativeTitle: title, totalRating: rating, release: {date}, runtime, genre, poster, description} = movie.filmInfo;
   const commentsCount = movie.comments.length;
   const userDetails = movie.userDetails;
@@ -77,3 +77,27 @@ export const createMovieCardTemplate = (movie) => {
     </article>`
   );
 };
+
+export default class MovieCard {
+  constructor(movie) {
+    this._movie = movie;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMovieCardTemplate(this._movie);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
