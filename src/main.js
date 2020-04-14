@@ -35,12 +35,41 @@ const moviePageElement = siteMainElement.querySelector(`.films`);
 const movieListElement = moviePageElement.querySelector(`.films-list`);
 const majorMovieListElement = movieListElement.querySelector(`.films-list__container`);
 
+const renderMovieCard = (movieListElement, movie) => {
+  const movieCardComponent = new MovieCardComponent(movie);
+  const movieDetailsComponent = new MovieDetailsComponent(movie);
+
+  const moviePosterElement = movieCardComponent.getElement().querySelector(`.film-card__poster`);
+  const movieTitleElement = movieCardComponent.getElement().querySelector(`.film-card__title`);
+  const movieCommentsCountElement = movieCardComponent.getElement().querySelector(`.film-card__comments`);
+  /* Сохраняет все элементы, клик на которые вызывает показ попапа с подробной информацией о фильме, в массив */
+  const detailsOpeners = [moviePosterElement, movieTitleElement, movieCommentsCountElement];
+  /* Сохраняет кнопку закрытия попапа */
+  const detailsCloseButtonElement = movieDetailsComponent.getElement().querySelector(`.film-details__close-btn`);
+
+  const onDetailsOpenerClick = () => {
+    render(document.body, movieDetailsComponent.getElement());
+  };
+
+  /* Добавляет обработчик клика, вызывающий показ попапа с подробной информацией о фильме */
+  detailsOpeners.forEach((detailsOpener) => detailsOpener.addEventListener(`click`, onDetailsOpenerClick));
+
+  const onDetailsCloseButtonClick = () => {
+    movieDetailsComponent.getElement().remove();
+  };
+
+  /* Добавляет обработчик клика, вызывающий удаление попапа с подробной информацией о фильме */
+  detailsCloseButtonElement.addEventListener(`click`, onDetailsCloseButtonClick);
+
+  render(movieListElement, movieCardComponent.getElement());
+};
+
 let showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
 
 movies
   .slice(0, showingMoviesCount)
   .forEach((movie) => {
-    render(majorMovieListElement, new MovieCardComponent(movie).getElement());
+    renderMovieCard(majorMovieListElement, movie);
   });
 
 render(movieListElement, new ShowMoreButtonComponent().getElement());
@@ -54,7 +83,7 @@ showMoreButtonElement.addEventListener(`click`, () => {
   movies
     .slice(prevMoviesCount, showingMoviesCount)
     .forEach((movie) => {
-      render(majorMovieListElement, new MovieCardComponent(movie).getElement());
+      renderMovieCard(majorMovieListElement, movie);
     });
 
   if (showingMoviesCount >= moviesCount) {
@@ -67,11 +96,9 @@ render(moviePageElement, new ExtraMovieListComponent(`Most commented`).getElemen
 
 const [topRatedMovieListElement, mostCommentedMovieListElement] = document.querySelectorAll(`.films-list--extra .films-list__container`);
 
-topRatedMovies.forEach((movie) => render(topRatedMovieListElement, new MovieCardComponent(movie).getElement()));
-mostCommentedMovies.forEach((movie) => render(mostCommentedMovieListElement, new MovieCardComponent(movie).getElement()));
+topRatedMovies.forEach((movie) => renderMovieCard(topRatedMovieListElement, movie));
+mostCommentedMovies.forEach((movie) => renderMovieCard(mostCommentedMovieListElement, movie));
 
 const footerStatisticsElement = document.querySelector(`.footer__statistics`);
 
 render(footerStatisticsElement, new MovieCounterComponent(moviesCount).getElement());
-
-render(document.body, new MovieDetailsComponent(movies[0]).getElement());
