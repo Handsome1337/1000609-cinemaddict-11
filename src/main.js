@@ -15,31 +15,6 @@ const MOVIE_COUNT = 22;
 const SHOWING_MOVIES_COUNT_ON_START = 5;
 const SHOWING_MOVIES_COUNT_BY_BUTTON = 5;
 
-/* Перечисление вариантов вставки элемента */
-const RenderPosition = {
-  BEFOREEND: `beforeend`
-};
-
-/* В следующих заданиях добавятся другие места вставки,
-поэтому использованы перечисление и switch */
-const render = (container, component, place = RenderPosition.BEFOREEND) => {
-  switch (place) {
-    default:
-      container.append(component);
-  }
-};
-
-/* Возвращает DOM-элемент на основе переданной в параметр разметки шаблона */
-const createElement = (template) => {
-  if (!template) {
-    return ``;
-  }
-
-  const newElement = document.createElement(`div`);
-  newElement.innerHTML = template;
-  return newElement.firstChild;
-};
-
 const movies = generateMovies(MOVIE_COUNT);
 const moviesCount = movies.length;
 const filters = generateFilters(movies);
