@@ -19,13 +19,14 @@ const SHOWING_MOVIES_COUNT_BY_BUTTON = 5;
 const movies = generateMovies(MOVIE_COUNT);
 const moviesCount = movies.length;
 const filters = generateFilters(movies);
+const watchedMoviesCount = filters.find(({name}) => name === `History`).count;
 const topRatedMovies = [...movies].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating).slice(0, 2);
 const mostCommentedMovies = [...movies].sort((a, b) => b.comments.length - a.comments.length).slice(0, 2);
 
 const siteHeaderElement = document.querySelector(`.header`);
 const siteMainElement = document.querySelector(`.main`);
 
-render(siteHeaderElement, new UserRankComponent(moviesCount).getElement());
+render(siteHeaderElement, new UserRankComponent(watchedMoviesCount).getElement());
 render(siteMainElement, new SiteMenuComponent(filters).getElement());
 render(siteMainElement, new SortingComponent().getElement());
 render(siteMainElement, new MovieListComponent().getElement());
