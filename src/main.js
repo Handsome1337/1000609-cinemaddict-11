@@ -16,25 +16,6 @@ const MOVIE_COUNT = 22;
 const SHOWING_MOVIES_COUNT_ON_START = 5;
 const SHOWING_MOVIES_COUNT_BY_BUTTON = 5;
 
-const movies = generateMovies(MOVIE_COUNT);
-const moviesCount = movies.length;
-const filters = generateFilters(movies);
-const watchedMoviesCount = filters.find(({name}) => name === `History`).count;
-const topRatedMovies = [...movies].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating).slice(0, 2);
-const mostCommentedMovies = [...movies].sort((a, b) => b.comments.length - a.comments.length).slice(0, 2);
-
-const siteHeaderElement = document.querySelector(`.header`);
-const siteMainElement = document.querySelector(`.main`);
-
-render(siteHeaderElement, new UserRankComponent(watchedMoviesCount).getElement());
-render(siteMainElement, new SiteMenuComponent(filters).getElement());
-render(siteMainElement, new SortingComponent().getElement());
-render(siteMainElement, new MovieListComponent().getElement());
-
-const moviePageElement = siteMainElement.querySelector(`.films`);
-const movieListElement = moviePageElement.querySelector(`.films-list`);
-const majorMovieListElement = movieListElement.querySelector(`.films-list__container`);
-
 const renderMovieCard = (movieListElement, movie) => {
   const movieCardComponent = new MovieCardComponent(movie);
   const movieDetailsComponent = new MovieDetailsComponent(movie);
@@ -64,40 +45,65 @@ const renderMovieCard = (movieListElement, movie) => {
   render(movieListElement, movieCardComponent.getElement());
 };
 
-let showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
+const renderMovies = (movieListComponent, movies) => {
+  const movieListElement = movieListComponent.getElement().querySelector(`.films-list`);
+  const majorMovieListElement = movieListElement.querySelector(`.films-list__container`);
 
-movies
-  .slice(0, showingMoviesCount)
-  .forEach((movie) => {
-    renderMovieCard(majorMovieListElement, movie);
-  });
-
-render(movieListElement, new ShowMoreButtonComponent().getElement());
-
-const showMoreButtonElement = movieListElement.querySelector(`.films-list__show-more`);
-
-showMoreButtonElement.addEventListener(`click`, () => {
-  const prevMoviesCount = showingMoviesCount;
-  showingMoviesCount += SHOWING_MOVIES_COUNT_BY_BUTTON;
+  let showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
 
   movies
-    .slice(prevMoviesCount, showingMoviesCount)
+    .slice(0, showingMoviesCount)
     .forEach((movie) => {
       renderMovieCard(majorMovieListElement, movie);
     });
 
-  if (showingMoviesCount >= moviesCount) {
-    showMoreButtonElement.remove();
-  }
-});
+  render(movieListElement, new ShowMoreButtonComponent().getElement());
 
-render(moviePageElement, new ExtraMovieListComponent(`Top rated`).getElement());
-render(moviePageElement, new ExtraMovieListComponent(`Most commented`).getElement());
+  const showMoreButtonElement = movieListElement.querySelector(`.films-list__show-more`);
 
-const [topRatedMovieListElement, mostCommentedMovieListElement] = document.querySelectorAll(`.films-list--extra .films-list__container`);
+  showMoreButtonElement.addEventListener(`click`, () => {
+    const prevMoviesCount = showingMoviesCount;
+    showingMoviesCount += SHOWING_MOVIES_COUNT_BY_BUTTON;
 
-topRatedMovies.forEach((movie) => renderMovieCard(topRatedMovieListElement, movie));
-mostCommentedMovies.forEach((movie) => renderMovieCard(mostCommentedMovieListElement, movie));
+    movies
+      .slice(prevMoviesCount, showingMoviesCount)
+      .forEach((movie) => {
+        renderMovieCard(majorMovieListElement, movie);
+      });
+
+    if (showingMoviesCount >= movies.length) {
+      showMoreButtonElement.remove();
+    }
+  });
+
+  const topRatedMovies = [...movies].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating).slice(0, 2);
+  const mostCommentedMovies = [...movies].sort((a, b) => b.comments.length - a.comments.length).slice(0, 2);
+
+  render(movieListComponent.getElement(), new ExtraMovieListComponent(`Top rated`).getElement());
+  render(movieListComponent.getElement(), new ExtraMovieListComponent(`Most commented`).getElement());
+
+  const [topRatedMovieListElement, mostCommentedMovieListElement] = document.querySelectorAll(`.films-list--extra .films-list__container`);
+
+  topRatedMovies.forEach((movie) => renderMovieCard(topRatedMovieListElement, movie));
+  mostCommentedMovies.forEach((movie) => renderMovieCard(mostCommentedMovieListElement, movie));
+};
+
+const movies = generateMovies(MOVIE_COUNT);
+const moviesCount = movies.length;
+const filters = generateFilters(movies);
+const watchedMoviesCount = filters.find(({name}) => name === `History`).count;
+
+const siteHeaderElement = document.querySelector(`.header`);
+const siteMainElement = document.querySelector(`.main`);
+
+render(siteHeaderElement, new UserRankComponent(watchedMoviesCount).getElement());
+render(siteMainElement, new SiteMenuComponent(filters).getElement());
+render(siteMainElement, new SortingComponent().getElement());
+
+const movieListComponent = new MovieListComponent(moviesCount);
+render(siteMainElement, movieListComponent.getElement());
+
+renderMovies(movieListComponent, movies);
 
 const footerStatisticsElement = document.querySelector(`.footer__statistics`);
 
