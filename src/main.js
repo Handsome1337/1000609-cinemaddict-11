@@ -30,13 +30,27 @@ const renderMovieCard = (movieListElement, movie) => {
 
   const onDetailsOpenerClick = () => {
     render(document.body, movieDetailsComponent.getElement());
+    document.addEventListener(`keydown`, onEscKeyDown);
   };
 
   /* Добавляет обработчик клика, вызывающий показ попапа с подробной информацией о фильме */
   detailsOpeners.forEach((detailsOpener) => detailsOpener.addEventListener(`click`, onDetailsOpenerClick));
 
-  const onDetailsCloseButtonClick = () => {
+  const removeDetails = () => {
     movieDetailsComponent.getElement().remove();
+    document.removeEventListener(`keydown`, onEscKeyDown);
+  };
+
+  const onDetailsCloseButtonClick = () => {
+    removeDetails();
+  };
+
+  const onEscKeyDown = (evt) => {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+    if (isEscKey) {
+      removeDetails();
+    }
   };
 
   /* Добавляет обработчик клика, вызывающий удаление попапа с подробной информацией о фильме */
