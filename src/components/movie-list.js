@@ -1,7 +1,7 @@
 import {createElement} from './../utils.js';
 
 const createMovieListTemplate = (moviesCount) => {
-  const headlineMarkup = `<h2 class="films-list__title${moviesCount ? ` visually-hidden"> All movies. Upcoming` : `">There are no movies in our database`}</h2>`;
+  const headlineMarkup = moviesCount ? `<h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>` : ``;
   const movieListContainerMarkup = moviesCount ? `<div class="films-list__container">\n</div>` : ``;
 
   return (
