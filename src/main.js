@@ -2,6 +2,7 @@ import UserRankComponent from './components/user-rank.js';
 import SiteMenuComponent from './components/site-menu.js';
 import SortingComponent from './components/sorting.js';
 import MovieListComponent from './components/movie-list.js';
+import NoMoviesComponent from './components/no-movies.js';
 import MovieCardComponent from './components/movie-card.js';
 import ShowMoreButtonComponent from './components/show-more-button.js';
 import ExtraMovieListComponent from './components/extra-movie-list.js';
@@ -61,6 +62,12 @@ const renderMovieCard = (movieListElement, movie) => {
 
 const renderMovies = (movieListComponent, movies) => {
   const movieListElement = movieListComponent.getElement().querySelector(`.films-list`);
+
+  if (!movies.length) {
+    render(movieListElement, new NoMoviesComponent().getElement());
+    return;
+  }
+
   const majorMovieListElement = movieListElement.querySelector(`.films-list__container`);
 
   let showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
