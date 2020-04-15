@@ -214,7 +214,7 @@ const generateMovie = () => {
 
   return {
     id: String(new Date() + Math.random()),
-    comments: generateComments(getRandomInt(0, 5)), // думаю, магические числа в моках не проблема - этих файлов уже не будет на защите
+    comments: generateComments(getRandomInt(0, 5)),
     filmInfo: {
       title: Object.keys(title)[0],
       alternativeTitle: Object.values(title)[0],

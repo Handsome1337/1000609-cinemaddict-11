@@ -1,6 +1,7 @@
-import {formatRuntime, formatDate} from './../utils.js';
+import {formatRuntime, formatDate, createElement} from './../utils.js';
 
 const DESCRIPTION_MAX_LENGTH = 140;
+const DESCRIPTION_END_CHECK = /[\s.,]$/;
 
 /* Содержит модификатор класса и текст для каждой кнопки (ключи - свойства фильма, которые пользователь может изменять) */
 const buttonPropsMap = new Map([
@@ -21,8 +22,8 @@ const buttonPropsMap = new Map([
 /* Удаляет символ пробела, точки или запятой, если краткое описание закончилось на один из этих символов */
 const formatDescription = (desc) => {
   let formattedDesc = desc;
-  if (formattedDesc.match(/[\s.,]$/)) { // не силён в регулярках, если можно сделать проверку последнего символа без рекурсии, подскажи, пожалуйста
-    formattedDesc = formatDescription(formattedDesc.replace(/[\s.,]$/, ``));
+  if (DESCRIPTION_END_CHECK.test(formattedDesc)) {
+    formattedDesc = formatDescription(formattedDesc.replace(DESCRIPTION_END_CHECK, ``));
   }
 
   return formattedDesc;
@@ -41,7 +42,7 @@ const createButtonsMarkup = (userDetails) => {
     }, ``);
 };
 
-export const createMovieCardTemplate = (movie) => {
+const createMovieCardTemplate = (movie) => {
   const {alternativeTitle: title, totalRating: rating, release: {date}, runtime, genre, poster, description} = movie.filmInfo;
   const commentsCount = movie.comments.length;
   const userDetails = movie.userDetails;
@@ -76,3 +77,27 @@ export const createMovieCardTemplate = (movie) => {
     </article>`
   );
 };
+
+export default class MovieCard {
+  constructor(movie) {
+    this._movie = movie;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMovieCardTemplate(this._movie);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

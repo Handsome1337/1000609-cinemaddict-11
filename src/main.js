@@ -1,100 +1,110 @@
-import {createUserRankTemplate} from './components/user-rank.js';
-import {createSiteMenuTemplate} from './components/site-menu.js';
-import {createSortingTemplate} from './components/sorting.js';
-import {createMovieListTemplate} from './components/movie-list.js';
-import {createMovieCardTemplate} from './components/movie-card.js';
-import {createShowMoreButtonTemplate} from './components/show-more-button.js';
-import {createExtraMovieListTemplate} from './components/extra-movie-list.js';
-import {createMovieDetailsTemplate} from './components/movie-details.js';
-import {createMovieCounterTemplate} from './components/movie-counter.js';
+import UserRankComponent from './components/user-rank.js';
+import SiteMenuComponent from './components/site-menu.js';
+import SortingComponent from './components/sorting.js';
+import MovieListComponent from './components/movie-list.js';
+import MovieCardComponent from './components/movie-card.js';
+import ShowMoreButtonComponent from './components/show-more-button.js';
+import ExtraMovieListComponent from './components/extra-movie-list.js';
+import MovieDetailsComponent from './components/movie-details.js';
+import MovieCounterComponent from './components/movie-counter.js';
 
 import {generateMovies} from './mock/movie.js';
 import {generateFilters} from './mock/filter.js';
+import {render} from './utils.js';
 
 const MOVIE_COUNT = 22;
 const SHOWING_MOVIES_COUNT_ON_START = 5;
 const SHOWING_MOVIES_COUNT_BY_BUTTON = 5;
 
-/* Перечисление вариантов вставки элемента */
-const RenderPosition = {
-  BEFOREEND: `beforeend`
+const renderMovieCard = (movieListElement, movie) => {
+  const movieCardComponent = new MovieCardComponent(movie);
+  const movieDetailsComponent = new MovieDetailsComponent(movie);
+
+  const moviePosterElement = movieCardComponent.getElement().querySelector(`.film-card__poster`);
+  const movieTitleElement = movieCardComponent.getElement().querySelector(`.film-card__title`);
+  const movieCommentsCountElement = movieCardComponent.getElement().querySelector(`.film-card__comments`);
+  /* Сохраняет все элементы, клик на которые вызывает показ попапа с подробной информацией о фильме, в массив */
+  const detailsOpeners = [moviePosterElement, movieTitleElement, movieCommentsCountElement];
+  /* Сохраняет кнопку закрытия попапа */
+  const detailsCloseButtonElement = movieDetailsComponent.getElement().querySelector(`.film-details__close-btn`);
+
+  const onDetailsOpenerClick = () => {
+    render(document.body, movieDetailsComponent.getElement());
+  };
+
+  /* Добавляет обработчик клика, вызывающий показ попапа с подробной информацией о фильме */
+  detailsOpeners.forEach((detailsOpener) => detailsOpener.addEventListener(`click`, onDetailsOpenerClick));
+
+  const onDetailsCloseButtonClick = () => {
+    movieDetailsComponent.getElement().remove();
+  };
+
+  /* Добавляет обработчик клика, вызывающий удаление попапа с подробной информацией о фильме */
+  detailsCloseButtonElement.addEventListener(`click`, onDetailsCloseButtonClick);
+
+  render(movieListElement, movieCardComponent.getElement());
 };
 
-/* В следующих заданиях добавятся другие места вставки,
-поэтому использованы перечисление и switch */
-const render = (container, component, place = RenderPosition.BEFOREEND) => {
-  switch (place) {
-    default:
-      container.append(component);
-  }
-};
+const renderMovies = (movieListComponent, movies) => {
+  const movieListElement = movieListComponent.getElement().querySelector(`.films-list`);
+  const majorMovieListElement = movieListElement.querySelector(`.films-list__container`);
 
-/* Возвращает DOM-элемент на основе переданной в параметр разметки шаблона */
-const createElement = (template) => {
-  if (!template) {
-    return ``;
-  }
+  let showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
 
-  const newElement = document.createElement(`div`);
-  newElement.innerHTML = template;
-  return newElement.firstChild;
+  movies
+    .slice(0, showingMoviesCount)
+    .forEach((movie) => {
+      renderMovieCard(majorMovieListElement, movie);
+    });
+
+  render(movieListElement, new ShowMoreButtonComponent().getElement());
+
+  const showMoreButtonElement = movieListElement.querySelector(`.films-list__show-more`);
+
+  showMoreButtonElement.addEventListener(`click`, () => {
+    const prevMoviesCount = showingMoviesCount;
+    showingMoviesCount += SHOWING_MOVIES_COUNT_BY_BUTTON;
+
+    movies
+      .slice(prevMoviesCount, showingMoviesCount)
+      .forEach((movie) => {
+        renderMovieCard(majorMovieListElement, movie);
+      });
+
+    if (showingMoviesCount >= movies.length) {
+      showMoreButtonElement.remove();
+    }
+  });
+
+  const topRatedMovies = [...movies].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating).slice(0, 2);
+  const mostCommentedMovies = [...movies].sort((a, b) => b.comments.length - a.comments.length).slice(0, 2);
+
+  render(movieListComponent.getElement(), new ExtraMovieListComponent(`Top rated`).getElement());
+  render(movieListComponent.getElement(), new ExtraMovieListComponent(`Most commented`).getElement());
+
+  const [topRatedMovieListElement, mostCommentedMovieListElement] = document.querySelectorAll(`.films-list--extra .films-list__container`);
+
+  topRatedMovies.forEach((movie) => renderMovieCard(topRatedMovieListElement, movie));
+  mostCommentedMovies.forEach((movie) => renderMovieCard(mostCommentedMovieListElement, movie));
 };
 
 const movies = generateMovies(MOVIE_COUNT);
 const moviesCount = movies.length;
 const filters = generateFilters(movies);
-const topRatedMovies = [...movies].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating).slice(0, 2);
-const mostCommentedMovies = [...movies].sort((a, b) => b.comments.length - a.comments.length).slice(0, 2);
+const watchedMoviesCount = filters.find(({name}) => name === `History`).count;
 
 const siteHeaderElement = document.querySelector(`.header`);
 const siteMainElement = document.querySelector(`.main`);
 
-render(siteHeaderElement, createElement(createUserRankTemplate(moviesCount)));
-render(siteMainElement, createElement(createSiteMenuTemplate(filters)));
-render(siteMainElement, createElement(createSortingTemplate()));
-render(siteMainElement, createElement(createMovieListTemplate()));
+render(siteHeaderElement, new UserRankComponent(watchedMoviesCount).getElement());
+render(siteMainElement, new SiteMenuComponent(filters).getElement());
+render(siteMainElement, new SortingComponent().getElement());
 
-const moviePageElement = siteMainElement.querySelector(`.films`);
-const movieListElement = moviePageElement.querySelector(`.films-list`);
-const majorMovieListElement = movieListElement.querySelector(`.films-list__container`);
+const movieListComponent = new MovieListComponent(moviesCount);
+render(siteMainElement, movieListComponent.getElement());
 
-let showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
-
-movies
-  .slice(0, showingMoviesCount)
-  .forEach((movie) => {
-    render(majorMovieListElement, createElement(createMovieCardTemplate(movie)));
-  });
-
-render(movieListElement, createElement(createShowMoreButtonTemplate()));
-
-const showMoreButtonElement = movieListElement.querySelector(`.films-list__show-more`);
-
-showMoreButtonElement.addEventListener(`click`, () => {
-  const prevMoviesCount = showingMoviesCount;
-  showingMoviesCount += SHOWING_MOVIES_COUNT_BY_BUTTON;
-
-  movies
-    .slice(prevMoviesCount, showingMoviesCount)
-    .forEach((movie) => {
-      render(majorMovieListElement, createElement(createMovieCardTemplate(movie)));
-    });
-
-  if (showingMoviesCount >= moviesCount) {
-    showMoreButtonElement.remove();
-  }
-});
-
-render(moviePageElement, createElement(createExtraMovieListTemplate(`Top rated`)));
-render(moviePageElement, createElement(createExtraMovieListTemplate(`Most commented`)));
-
-const [topRatedMovieListElement, mostCommentedMovieListElement] = document.querySelectorAll(`.films-list--extra .films-list__container`);
-
-topRatedMovies.forEach((movie) => render(topRatedMovieListElement, createElement(createMovieCardTemplate(movie))));
-mostCommentedMovies.forEach((movie) => render(mostCommentedMovieListElement, createElement(createMovieCardTemplate(movie))));
+renderMovies(movieListComponent, movies);
 
 const footerStatisticsElement = document.querySelector(`.footer__statistics`);
 
-render(footerStatisticsElement, createElement(createMovieCounterTemplate(moviesCount)));
-
-render(document.body, createElement(createMovieDetailsTemplate(movies[0])));
+render(footerStatisticsElement, new MovieCounterComponent(moviesCount).getElement());
