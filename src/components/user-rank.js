@@ -1,4 +1,4 @@
-import {createElement} from './../utils.js';
+import AbstractComponent from './abstract-component.js';
 
 const createRankMarkup = (watchedMoviesCount) => {
   const template = (text) => `<p class="profile__rating">${text}</p>`;
@@ -27,26 +27,14 @@ const createUserRankTemplate = (count) => {
   );
 };
 
-export default class UserRank {
+export default class UserRank extends AbstractComponent {
   constructor(count) {
-    this._count = count;
+    super();
 
-    this._element = null;
+    this._count = count;
   }
 
   getTemplate() {
     return createUserRankTemplate(this._count);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

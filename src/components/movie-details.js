@@ -1,4 +1,5 @@
-import {formatRuntime, formatDate, createElement} from './../utils.js';
+import AbstractComponent from './abstract-component.js';
+import {formatRuntime, formatDate} from './../utils.js';
 
 const EMOTIONS = [`smile`, `sleeping`, `puke`, `angry`];
 
@@ -186,26 +187,14 @@ const createMovieDetailsTemplate = (movie) => {
   );
 };
 
-export default class MovieDetails {
+export default class MovieDetails extends AbstractComponent {
   constructor(movie) {
-    this._movie = movie;
+    super();
 
-    this._element = null;
+    this._movie = movie;
   }
 
   getTemplate() {
     return createMovieDetailsTemplate(this._movie);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
