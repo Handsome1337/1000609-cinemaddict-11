@@ -197,4 +197,10 @@ export default class MovieDetails extends AbstractComponent {
   getTemplate() {
     return createMovieDetailsTemplate(this._movie);
   }
+
+  setOnCloseButtonClick(handler) {
+    /* Находит кнопку закрытия попапа */
+    this.getElement().querySelector(`.film-details__close-btn`)
+      .addEventListener(`click`, handler);
+  }
 }

@@ -21,29 +21,17 @@ const renderMovieCard = (movieListElement, movie) => {
   const movieCardComponent = new MovieCardComponent(movie);
   const movieDetailsComponent = new MovieDetailsComponent(movie);
 
-  const moviePosterElement = movieCardComponent.getElement().querySelector(`.film-card__poster`);
-  const movieTitleElement = movieCardComponent.getElement().querySelector(`.film-card__title`);
-  const movieCommentsCountElement = movieCardComponent.getElement().querySelector(`.film-card__comments`);
-  /* Сохраняет все элементы, клик на которые вызывает показ попапа с подробной информацией о фильме, в массив */
-  const detailsOpeners = [moviePosterElement, movieTitleElement, movieCommentsCountElement];
-  /* Сохраняет кнопку закрытия попапа */
-  const detailsCloseButtonElement = movieDetailsComponent.getElement().querySelector(`.film-details__close-btn`);
-
-  const onDetailsOpenerClick = () => {
-    render(document.body, movieDetailsComponent);
-    document.addEventListener(`keydown`, onEscKeyDown);
-  };
-
   /* Добавляет обработчик клика, вызывающий показ попапа с подробной информацией о фильме */
-  detailsOpeners.forEach((detailsOpener) => detailsOpener.addEventListener(`click`, onDetailsOpenerClick));
+  movieCardComponent.setOnDetailsOpenersClick(() => {
+    render(document.body, movieDetailsComponent);
+    /* Добавляет обработчик клика, вызывающий удаление попапа с подробной информацией о фильме */
+    movieDetailsComponent.setOnCloseButtonClick(removeDetails);
+    document.addEventListener(`keydown`, onEscKeyDown);
+  });
 
   const removeDetails = () => {
     remove(movieDetailsComponent);
     document.removeEventListener(`keydown`, onEscKeyDown);
-  };
-
-  const onDetailsCloseButtonClick = () => {
-    removeDetails();
   };
 
   const onEscKeyDown = (evt) => {
@@ -53,9 +41,6 @@ const renderMovieCard = (movieListElement, movie) => {
       removeDetails();
     }
   };
-
-  /* Добавляет обработчик клика, вызывающий удаление попапа с подробной информацией о фильме */
-  detailsCloseButtonElement.addEventListener(`click`, onDetailsCloseButtonClick);
 
   render(movieListElement, movieCardComponent);
 };
@@ -81,7 +66,7 @@ const renderMovies = (movieListComponent, movies) => {
   const showMoreButtonComponent = new ShowMoreButtonComponent();
   render(movieListElement, showMoreButtonComponent);
 
-  showMoreButtonComponent.getElement().addEventListener(`click`, () => {
+  showMoreButtonComponent.setOnClick(() => {
     const prevMoviesCount = showingMoviesCount;
     showingMoviesCount += SHOWING_MOVIES_COUNT_BY_BUTTON;
 

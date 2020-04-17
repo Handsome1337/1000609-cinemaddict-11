@@ -89,4 +89,15 @@ export default class MovieCard extends AbstractComponent {
   getTemplate() {
     return createMovieCardTemplate(this._movie);
   }
+
+  setOnDetailsOpenersClick(handler) {
+    const moviePosterElement = this.getElement().querySelector(`.film-card__poster`);
+    const movieTitleElement = this.getElement().querySelector(`.film-card__title`);
+    const movieCommentsCountElement = this.getElement().querySelector(`.film-card__comments`);
+    /* Сохраняет все элементы, клик на которые вызывает показ попапа с подробной информацией о фильме, в массив */
+    const detailsOpeners = [moviePosterElement, movieTitleElement, movieCommentsCountElement];
+
+    /* Добавляет обработчик клика, вызывающий показ попапа с подробной информацией о фильме */
+    detailsOpeners.forEach((detailsOpener) => detailsOpener.addEventListener(`click`, handler));
+  }
 }
