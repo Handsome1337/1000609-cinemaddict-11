@@ -7,6 +7,7 @@ import {render, remove} from './../utils/render.js';
 
 const SHOWING_MOVIES_COUNT_ON_START = 5;
 const SHOWING_MOVIES_COUNT_BY_BUTTON = 5;
+const EXTRA_MOVIES_COUNT = 2;
 
 const renderMovieCard = (movieListElement, movie) => {
   const movieCardComponent = new MovieCardComponent(movie);
@@ -80,15 +81,19 @@ export default class PageController {
       }
     });
 
-    const topRatedMovies = [...movies].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating).slice(0, 2);
-    const mostCommentedMovies = [...movies].sort((a, b) => b.comments.length - a.comments.length).slice(0, 2);
+    const topRatedMovies = movies.filter((movie) => movie.filmInfo.totalRating).sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating).slice(0, EXTRA_MOVIES_COUNT);
+    const mostCommentedMovies = movies.filter((movie) => movie.comments.length).sort((a, b) => b.comments.length - a.comments.length).slice(0, EXTRA_MOVIES_COUNT);
 
-    render(container, new ExtraMovieListComponent(`Top rated`));
-    render(container, new ExtraMovieListComponent(`Most commented`));
+    if (topRatedMovies.length) {
+      const extraMovieListComponent = new ExtraMovieListComponent(`Top rated`);
+      render(container, extraMovieListComponent);
+      topRatedMovies.forEach((movie) => renderMovieCard(extraMovieListComponent.getElement().querySelector(`.films-list__container`), movie));
+    }
 
-    const [topRatedMovieListElement, mostCommentedMovieListElement] = document.querySelectorAll(`.films-list--extra .films-list__container`);
-
-    topRatedMovies.forEach((movie) => renderMovieCard(topRatedMovieListElement, movie));
-    mostCommentedMovies.forEach((movie) => renderMovieCard(mostCommentedMovieListElement, movie));
+    if (mostCommentedMovies.length) {
+      const extraMovieListComponent = new ExtraMovieListComponent(`Most commented`);
+      render(container, extraMovieListComponent);
+      mostCommentedMovies.forEach((movie) => renderMovieCard(extraMovieListComponent.getElement().querySelector(`.films-list__container`), movie));
+    }
   }
 }
