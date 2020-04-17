@@ -1,4 +1,4 @@
-import {createElement} from './../utils.js';
+import AbstractComponent from './abstract-component.js';
 
 const MAIN_FILTER = `All movies`;
 
@@ -30,26 +30,14 @@ const createSiteMenuTemplate = (filters) => {
   );
 };
 
-export default class SiteMenu {
+export default class SiteMenu extends AbstractComponent {
   constructor(filters) {
-    this._filters = filters;
+    super();
 
-    this._element = null;
+    this._filters = filters;
   }
 
   getTemplate() {
     return createSiteMenuTemplate(this._filters);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

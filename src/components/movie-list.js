@@ -1,4 +1,4 @@
-import {createElement} from './../utils.js';
+import AbstractComponent from './abstract-component.js';
 
 const createMovieListTemplate = (moviesCount) => {
   const headlineMarkup = moviesCount ? `<h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>` : ``;
@@ -15,26 +15,14 @@ const createMovieListTemplate = (moviesCount) => {
   );
 };
 
-export default class MovieList {
+export default class MovieList extends AbstractComponent {
   constructor(moviesCount) {
-    this._moviesCount = moviesCount;
+    super();
 
-    this._element = null;
+    this._moviesCount = moviesCount;
   }
 
   getTemplate() {
     return createMovieListTemplate(this._moviesCount);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

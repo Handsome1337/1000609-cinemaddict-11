@@ -1,4 +1,5 @@
-import {formatRuntime, formatDate, createElement} from './../utils.js';
+import AbstractComponent from './abstract-component.js';
+import {formatRuntime, formatDate} from './../utils/common.js';
 
 const DESCRIPTION_MAX_LENGTH = 140;
 const DESCRIPTION_END_CHECK = /[\s.,]$/;
@@ -78,26 +79,25 @@ const createMovieCardTemplate = (movie) => {
   );
 };
 
-export default class MovieCard {
+export default class MovieCard extends AbstractComponent {
   constructor(movie) {
-    this._movie = movie;
+    super();
 
-    this._element = null;
+    this._movie = movie;
   }
 
   getTemplate() {
     return createMovieCardTemplate(this._movie);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
+  setOnDetailsOpenersClick(handler) {
+    const moviePosterElement = this.getElement().querySelector(`.film-card__poster`);
+    const movieTitleElement = this.getElement().querySelector(`.film-card__title`);
+    const movieCommentsCountElement = this.getElement().querySelector(`.film-card__comments`);
+    /* Сохраняет все элементы, клик на которые вызывает показ попапа с подробной информацией о фильме, в массив */
+    const detailsOpeners = [moviePosterElement, movieTitleElement, movieCommentsCountElement];
 
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+    /* Добавляет обработчик клика, вызывающий показ попапа с подробной информацией о фильме */
+    detailsOpeners.forEach((detailsOpener) => detailsOpener.addEventListener(`click`, handler));
   }
 }
