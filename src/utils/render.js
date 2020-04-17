@@ -12,11 +12,16 @@ const createElement = (template) => {
   return newElement.firstChild;
 };
 
-const render = (container, element, place = RenderPosition.BEFOREEND) => {
+const render = (container, component, place = RenderPosition.BEFOREEND) => {
   switch (place) {
     default:
-      container.append(element);
+      container.append(component.getElement());
   }
 };
 
-export {createElement, render};
+const remove = (component) => {
+  component.getElement().remove();
+  component.removeElement();
+};
+
+export {createElement, render, remove};

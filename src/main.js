@@ -11,7 +11,7 @@ import MovieCounterComponent from './components/movie-counter.js';
 
 import {generateMovies} from './mock/movie.js';
 import {generateFilters} from './mock/filter.js';
-import {render} from './utils/render.js';
+import {render, remove} from './utils/render.js';
 
 const MOVIE_COUNT = 22;
 const SHOWING_MOVIES_COUNT_ON_START = 5;
@@ -30,7 +30,7 @@ const renderMovieCard = (movieListElement, movie) => {
   const detailsCloseButtonElement = movieDetailsComponent.getElement().querySelector(`.film-details__close-btn`);
 
   const onDetailsOpenerClick = () => {
-    render(document.body, movieDetailsComponent.getElement());
+    render(document.body, movieDetailsComponent);
     document.addEventListener(`keydown`, onEscKeyDown);
   };
 
@@ -38,7 +38,7 @@ const renderMovieCard = (movieListElement, movie) => {
   detailsOpeners.forEach((detailsOpener) => detailsOpener.addEventListener(`click`, onDetailsOpenerClick));
 
   const removeDetails = () => {
-    movieDetailsComponent.getElement().remove();
+    remove(movieDetailsComponent);
     document.removeEventListener(`keydown`, onEscKeyDown);
   };
 
@@ -57,14 +57,14 @@ const renderMovieCard = (movieListElement, movie) => {
   /* Добавляет обработчик клика, вызывающий удаление попапа с подробной информацией о фильме */
   detailsCloseButtonElement.addEventListener(`click`, onDetailsCloseButtonClick);
 
-  render(movieListElement, movieCardComponent.getElement());
+  render(movieListElement, movieCardComponent);
 };
 
 const renderMovies = (movieListComponent, movies) => {
   const movieListElement = movieListComponent.getElement().querySelector(`.films-list`);
 
   if (!movies.length) {
-    render(movieListElement, new NoMoviesComponent().getElement());
+    render(movieListElement, new NoMoviesComponent());
     return;
   }
 
@@ -78,11 +78,10 @@ const renderMovies = (movieListComponent, movies) => {
       renderMovieCard(majorMovieListElement, movie);
     });
 
-  render(movieListElement, new ShowMoreButtonComponent().getElement());
+  const showMoreButtonComponent = new ShowMoreButtonComponent();
+  render(movieListElement, showMoreButtonComponent);
 
-  const showMoreButtonElement = movieListElement.querySelector(`.films-list__show-more`);
-
-  showMoreButtonElement.addEventListener(`click`, () => {
+  showMoreButtonComponent.getElement().addEventListener(`click`, () => {
     const prevMoviesCount = showingMoviesCount;
     showingMoviesCount += SHOWING_MOVIES_COUNT_BY_BUTTON;
 
@@ -93,15 +92,15 @@ const renderMovies = (movieListComponent, movies) => {
       });
 
     if (showingMoviesCount >= movies.length) {
-      showMoreButtonElement.remove();
+      remove(showMoreButtonComponent);
     }
   });
 
   const topRatedMovies = [...movies].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating).slice(0, 2);
   const mostCommentedMovies = [...movies].sort((a, b) => b.comments.length - a.comments.length).slice(0, 2);
 
-  render(movieListComponent.getElement(), new ExtraMovieListComponent(`Top rated`).getElement());
-  render(movieListComponent.getElement(), new ExtraMovieListComponent(`Most commented`).getElement());
+  render(movieListComponent.getElement(), new ExtraMovieListComponent(`Top rated`));
+  render(movieListComponent.getElement(), new ExtraMovieListComponent(`Most commented`));
 
   const [topRatedMovieListElement, mostCommentedMovieListElement] = document.querySelectorAll(`.films-list--extra .films-list__container`);
 
@@ -117,15 +116,15 @@ const watchedMoviesCount = filters.find(({name}) => name === `History`).count;
 const siteHeaderElement = document.querySelector(`.header`);
 const siteMainElement = document.querySelector(`.main`);
 
-render(siteHeaderElement, new UserRankComponent(watchedMoviesCount).getElement());
-render(siteMainElement, new SiteMenuComponent(filters).getElement());
-render(siteMainElement, new SortingComponent().getElement());
+render(siteHeaderElement, new UserRankComponent(watchedMoviesCount));
+render(siteMainElement, new SiteMenuComponent(filters));
+render(siteMainElement, new SortingComponent());
 
 const movieListComponent = new MovieListComponent(moviesCount);
-render(siteMainElement, movieListComponent.getElement());
+render(siteMainElement, movieListComponent);
 
 renderMovies(movieListComponent, movies);
 
 const footerStatisticsElement = document.querySelector(`.footer__statistics`);
 
-render(footerStatisticsElement, new MovieCounterComponent(moviesCount).getElement());
+render(footerStatisticsElement, new MovieCounterComponent(moviesCount));
