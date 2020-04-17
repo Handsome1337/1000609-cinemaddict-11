@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract-component.js';
-import {formatRuntime, formatDate} from './../utils.js';
+import {formatRuntime, formatDate} from './../utils/common.js';
 
 const EMOTIONS = [`smile`, `sleeping`, `puke`, `angry`];
 

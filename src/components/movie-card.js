@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract-component.js';
-import {formatRuntime, formatDate} from './../utils.js';
+import {formatRuntime, formatDate} from './../utils/common.js';
 
 const DESCRIPTION_MAX_LENGTH = 140;
 const DESCRIPTION_END_CHECK = /[\s.,]$/;

@@ -11,7 +11,7 @@ import MovieCounterComponent from './components/movie-counter.js';
 
 import {generateMovies} from './mock/movie.js';
 import {generateFilters} from './mock/filter.js';
-import {render} from './utils.js';
+import {render} from './utils/render.js';
 
 const MOVIE_COUNT = 22;
 const SHOWING_MOVIES_COUNT_ON_START = 5;
