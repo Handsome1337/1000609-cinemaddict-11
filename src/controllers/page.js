@@ -69,22 +69,30 @@ export default class PageController {
         renderMovieCard(majorMovieListElement, movie);
       });
 
-    render(movieListElement, this._showMoreButtonComponent);
-
-    this._showMoreButtonComponent.setOnClick(() => {
-      const prevMoviesCount = showingMoviesCount;
-      showingMoviesCount += SHOWING_MOVIES_COUNT_BY_BUTTON;
-
-      movies
-        .slice(prevMoviesCount, showingMoviesCount)
-        .forEach((movie) => {
-          renderMovieCard(majorMovieListElement, movie);
-        });
-
+    const renderShowMoreButton = () => {
       if (showingMoviesCount >= movies.length) {
-        remove(this._showMoreButtonComponent);
+        return;
       }
-    });
+
+      render(movieListElement, this._showMoreButtonComponent);
+
+      this._showMoreButtonComponent.setOnClick(() => {
+        const prevMoviesCount = showingMoviesCount;
+        showingMoviesCount += SHOWING_MOVIES_COUNT_BY_BUTTON;
+
+        movies
+          .slice(prevMoviesCount, showingMoviesCount)
+          .forEach((movie) => {
+            renderMovieCard(majorMovieListElement, movie);
+          });
+
+        if (showingMoviesCount >= movies.length) {
+          remove(this._showMoreButtonComponent);
+        }
+      });
+    };
+
+    renderShowMoreButton();
 
     const topRatedMovies = movies.filter((movie) => movie.filmInfo.totalRating).sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating).slice(0, EXTRA_MOVIES_COUNT);
     const mostCommentedMovies = movies.filter((movie) => movie.comments.length).sort((a, b) => b.comments.length - a.comments.length).slice(0, EXTRA_MOVIES_COUNT);
