@@ -1,4 +1,4 @@
-import SortingComponent from './../components/sorting.js';
+import SortingComponent, {SortType} from './../components/sorting.js';
 import NoMoviesComponent from './../components/no-movies.js';
 import MovieCardComponent from './../components/movie-card.js';
 import MovieDetailsComponent from './../components/movie-details.js';
@@ -38,6 +38,23 @@ const renderMovieCard = (movieListElement, movie) => {
   render(movieListElement, movieCardComponent);
 };
 
+const getSortedMovies = (movies, sortType) => {
+  let sortedMovies = [];
+
+  switch (sortType) {
+    case SortType.DATE:
+      sortedMovies = [...movies].sort((a, b) => b.filmInfo.release.date - a.filmInfo.release.date);
+      break;
+    case SortType.RATING:
+      sortedMovies = [...movies].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
+      break;
+    default:
+      sortedMovies = [...movies];
+  }
+
+  return sortedMovies;
+};
+
 export default class PageController {
   constructor(container) {
     this._container = container;
@@ -70,17 +87,15 @@ export default class PageController {
       });
 
     const renderShowMoreButton = () => {
-      if (showingMoviesCount >= movies.length) {
-        return;
-      }
-
       render(movieListElement, this._showMoreButtonComponent);
 
       this._showMoreButtonComponent.setOnClick(() => {
         const prevMoviesCount = showingMoviesCount;
         showingMoviesCount += SHOWING_MOVIES_COUNT_BY_BUTTON;
 
-        movies
+        const sortedMovies = getSortedMovies(movies, this._sortingComponent.getSortType());
+
+        sortedMovies
           .slice(prevMoviesCount, showingMoviesCount)
           .forEach((movie) => {
             renderMovieCard(majorMovieListElement, movie);
@@ -108,5 +123,22 @@ export default class PageController {
       render(container, extraMovieListComponent);
       mostCommentedMovies.forEach((movie) => renderMovieCard(extraMovieListComponent.getElement().querySelector(`.films-list__container`), movie));
     }
+
+    this._sortingComponent.setOnSortTypeChange((sortType) => {
+      showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
+
+      const sortedMovies = getSortedMovies(movies, sortType);
+
+      majorMovieListElement.innerHTML = ``;
+
+      sortedMovies
+        .slice(0, showingMoviesCount)
+        .forEach((movie) => {
+          renderMovieCard(majorMovieListElement, movie);
+        });
+
+      remove(this._showMoreButtonComponent);
+      renderShowMoreButton();
+    });
   }
 }
