@@ -1,9 +1,10 @@
+import SortingComponent from './../components/sorting.js';
 import NoMoviesComponent from './../components/no-movies.js';
 import MovieCardComponent from './../components/movie-card.js';
 import MovieDetailsComponent from './../components/movie-details.js';
 import ShowMoreButtonComponent from './../components/show-more-button.js';
 import ExtraMovieListComponent from './../components/extra-movie-list.js';
-import {render, remove} from './../utils/render.js';
+import {RenderPosition, render, remove} from './../utils/render.js';
 
 const SHOWING_MOVIES_COUNT_ON_START = 5;
 const SHOWING_MOVIES_COUNT_BY_BUTTON = 5;
@@ -41,12 +42,16 @@ export default class PageController {
   constructor(container) {
     this._container = container;
 
+    this._sortingComponent = new SortingComponent();
     this._noMoviesComponent = new NoMoviesComponent();
     this._showMoreButtonComponent = new ShowMoreButtonComponent();
   }
 
   render(movies) {
     const container = this._container.getElement();
+
+    render(container, this._sortingComponent, RenderPosition.BEFORE);
+
     const movieListElement = container.querySelector(`.films-list`);
 
     if (!movies.length) {

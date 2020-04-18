@@ -1,6 +1,5 @@
 import UserRankComponent from './components/user-rank.js';
 import SiteMenuComponent from './components/site-menu.js';
-import SortingComponent from './components/sorting.js';
 import MovieListComponent from './components/movie-list.js';
 import PageController from './controllers/page.js';
 import MovieCounterComponent from './components/movie-counter.js';
@@ -20,7 +19,6 @@ const siteMainElement = document.querySelector(`.main`);
 
 render(siteHeaderElement, new UserRankComponent(watchedMoviesCount));
 render(siteMainElement, new SiteMenuComponent(filters));
-render(siteMainElement, new SortingComponent());
 
 const movieListComponent = new MovieListComponent(moviesCount);
 const pageController = new PageController(movieListComponent);
