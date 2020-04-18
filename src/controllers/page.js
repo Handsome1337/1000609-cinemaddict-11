@@ -72,6 +72,7 @@ export default class PageController {
 
   render(movies) {
     const container = this._container.getElement();
+    let sortedMovies = movies;
 
     render(container, this._sortingComponent, RenderPosition.BEFORE);
 
@@ -86,7 +87,7 @@ export default class PageController {
 
     let showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
 
-    renderMovies(majorMovieListElement, movies.slice(0, showingMoviesCount));
+    renderMovies(majorMovieListElement, sortedMovies.slice(0, showingMoviesCount));
 
     const renderShowMoreButton = () => {
       render(movieListElement, this._showMoreButtonComponent);
@@ -94,8 +95,6 @@ export default class PageController {
       this._showMoreButtonComponent.setOnClick(() => {
         const prevMoviesCount = showingMoviesCount;
         showingMoviesCount += SHOWING_MOVIES_COUNT_BY_BUTTON;
-
-        const sortedMovies = getSortedMovies(movies, this._sortingComponent.getSortType());
 
         renderMovies(majorMovieListElement, sortedMovies.slice(prevMoviesCount, showingMoviesCount));
 
@@ -125,7 +124,7 @@ export default class PageController {
     this._sortingComponent.setOnSortTypeChange((sortType) => {
       showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
 
-      const sortedMovies = getSortedMovies(movies, sortType);
+      sortedMovies = getSortedMovies(movies, sortType);
 
       majorMovieListElement.innerHTML = ``;
 
