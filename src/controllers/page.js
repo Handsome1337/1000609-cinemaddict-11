@@ -38,6 +38,12 @@ const renderMovieCard = (movieListElement, movie) => {
   render(movieListElement, movieCardComponent);
 };
 
+const renderMovies = (movieListElement, movies) => {
+  movies.forEach((movie) => {
+    renderMovieCard(movieListElement, movie);
+  });
+};
+
 const getSortedMovies = (movies, sortType) => {
   let sortedMovies = [];
 
@@ -80,11 +86,7 @@ export default class PageController {
 
     let showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
 
-    movies
-      .slice(0, showingMoviesCount)
-      .forEach((movie) => {
-        renderMovieCard(majorMovieListElement, movie);
-      });
+    renderMovies(majorMovieListElement, movies.slice(0, showingMoviesCount));
 
     const renderShowMoreButton = () => {
       render(movieListElement, this._showMoreButtonComponent);
@@ -95,11 +97,7 @@ export default class PageController {
 
         const sortedMovies = getSortedMovies(movies, this._sortingComponent.getSortType());
 
-        sortedMovies
-          .slice(prevMoviesCount, showingMoviesCount)
-          .forEach((movie) => {
-            renderMovieCard(majorMovieListElement, movie);
-          });
+        renderMovies(majorMovieListElement, sortedMovies.slice(prevMoviesCount, showingMoviesCount));
 
         if (showingMoviesCount >= movies.length) {
           remove(this._showMoreButtonComponent);
@@ -115,13 +113,13 @@ export default class PageController {
     if (topRatedMovies.length) {
       const extraMovieListComponent = new ExtraMovieListComponent(`Top rated`);
       render(container, extraMovieListComponent);
-      topRatedMovies.forEach((movie) => renderMovieCard(extraMovieListComponent.getElement().querySelector(`.films-list__container`), movie));
+      renderMovies(extraMovieListComponent.getElement().querySelector(`.films-list__container`), topRatedMovies);
     }
 
     if (mostCommentedMovies.length) {
       const extraMovieListComponent = new ExtraMovieListComponent(`Most commented`);
       render(container, extraMovieListComponent);
-      mostCommentedMovies.forEach((movie) => renderMovieCard(extraMovieListComponent.getElement().querySelector(`.films-list__container`), movie));
+      renderMovies(extraMovieListComponent.getElement().querySelector(`.films-list__container`), mostCommentedMovies);
     }
 
     this._sortingComponent.setOnSortTypeChange((sortType) => {
@@ -131,11 +129,7 @@ export default class PageController {
 
       majorMovieListElement.innerHTML = ``;
 
-      sortedMovies
-        .slice(0, showingMoviesCount)
-        .forEach((movie) => {
-          renderMovieCard(majorMovieListElement, movie);
-        });
+      renderMovies(majorMovieListElement, sortedMovies.slice(0, showingMoviesCount));
 
       remove(this._showMoreButtonComponent);
       renderShowMoreButton();
