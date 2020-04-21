@@ -65,49 +65,41 @@ export default class PageController {
   constructor(container) {
     this._container = container;
 
+    this._movies = [];
+    this._sortedMovies = [];
+    this._showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
     this._sortingComponent = new SortingComponent();
     this._noMoviesComponent = new NoMoviesComponent();
     this._showMoreButtonComponent = new ShowMoreButtonComponent();
+
+    this._onSortTypeChange = this._onSortTypeChange.bind(this);
+
+    this._sortingComponent.setOnSortTypeChange(this._onSortTypeChange);
   }
 
   render(movies) {
+    this._movies = movies;
+    this._sortedMovies = movies;
+
     const container = this._container.getElement();
-    let sortedMovies = movies;
 
     render(container, this._sortingComponent, RenderPosition.BEFORE);
 
     const movieListElement = container.querySelector(`.films-list`);
 
-    if (!movies.length) {
+    if (!this._movies.length) {
       render(movieListElement, this._noMoviesComponent);
       return;
     }
 
     const majorMovieListElement = movieListElement.querySelector(`.films-list__container`);
 
-    let showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
+    renderMovies(majorMovieListElement, this._sortedMovies.slice(0, this._showingMoviesCount));
 
-    renderMovies(majorMovieListElement, sortedMovies.slice(0, showingMoviesCount));
+    this._renderShowMoreButton();
 
-    const renderShowMoreButton = () => {
-      render(movieListElement, this._showMoreButtonComponent);
-
-      this._showMoreButtonComponent.setOnClick(() => {
-        const prevMoviesCount = showingMoviesCount;
-        showingMoviesCount += SHOWING_MOVIES_COUNT_BY_BUTTON;
-
-        renderMovies(majorMovieListElement, sortedMovies.slice(prevMoviesCount, showingMoviesCount));
-
-        if (showingMoviesCount >= movies.length) {
-          remove(this._showMoreButtonComponent);
-        }
-      });
-    };
-
-    renderShowMoreButton();
-
-    const topRatedMovies = movies.filter((movie) => movie.filmInfo.totalRating).sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating).slice(0, EXTRA_MOVIES_COUNT);
-    const mostCommentedMovies = movies.filter((movie) => movie.comments.length).sort((a, b) => b.comments.length - a.comments.length).slice(0, EXTRA_MOVIES_COUNT);
+    const topRatedMovies = this._movies.filter((movie) => movie.filmInfo.totalRating).sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating).slice(0, EXTRA_MOVIES_COUNT);
+    const mostCommentedMovies = this._movies.filter((movie) => movie.comments.length).sort((a, b) => b.comments.length - a.comments.length).slice(0, EXTRA_MOVIES_COUNT);
 
     if (topRatedMovies.length) {
       const extraMovieListComponent = new ExtraMovieListComponent(`Top rated`);
@@ -120,18 +112,36 @@ export default class PageController {
       render(container, extraMovieListComponent);
       renderMovies(extraMovieListComponent.getElement().querySelector(`.films-list__container`), mostCommentedMovies);
     }
+  }
 
-    this._sortingComponent.setOnSortTypeChange((sortType) => {
-      showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
+  _renderShowMoreButton() {
+    const movieListElement = this._container.getElement().querySelector(`.films-list`);
+    render(movieListElement, this._showMoreButtonComponent);
 
-      sortedMovies = getSortedMovies(movies, sortType);
+    this._showMoreButtonComponent.setOnClick(() => {
+      const prevMoviesCount = this._showingMoviesCount;
+      const majorMovieListElement = movieListElement.querySelector(`.films-list__container`);
+      this._showingMoviesCount += SHOWING_MOVIES_COUNT_BY_BUTTON;
 
-      majorMovieListElement.innerHTML = ``;
+      renderMovies(majorMovieListElement, this._sortedMovies.slice(prevMoviesCount, this._showingMoviesCount));
 
-      renderMovies(majorMovieListElement, sortedMovies.slice(0, showingMoviesCount));
-
-      remove(this._showMoreButtonComponent);
-      renderShowMoreButton();
+      if (this._showingMoviesCount >= this._movies.length) {
+        remove(this._showMoreButtonComponent);
+      }
     });
+  }
+
+  _onSortTypeChange(sortType) {
+    this._showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
+
+    this._sortedMovies = getSortedMovies(this._movies, sortType);
+    const majorMovieListElement = this._container.getElement().querySelector(`.films-list__container`);
+
+    majorMovieListElement.innerHTML = ``;
+
+    renderMovies(majorMovieListElement, this._sortedMovies.slice(0, this._showingMoviesCount));
+
+    remove(this._showMoreButtonComponent);
+    this._renderShowMoreButton();
   }
 }
