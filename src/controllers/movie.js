@@ -28,7 +28,7 @@ export default class MovieController {
     this._movieCardComponent.setOnDetailsOpenersClick(() => {
       render(document.body, this._movieDetailsComponent);
       /* Добавляет обработчик клика, вызывающий удаление попапа с подробной информацией о фильме */
-      this._movieDetailsComponent.setOnCloseButtonClick(this._removeDetails);
+      this._subscribeOnPopupEvents(movie);
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
@@ -71,6 +71,7 @@ export default class MovieController {
     if (oldMovieCardComponent && oldMovieDetailsComponent) {
       replace(oldMovieCardComponent, this._movieCardComponent);
       replace(oldMovieDetailsComponent, this._movieDetailsComponent);
+      this._subscribeOnPopupEvents(movie);  
     } else {
       render(this._container, this._movieCardComponent);
     }
@@ -87,5 +88,45 @@ export default class MovieController {
     if (isEscKey) {
       this._removeDetails();
     }
+  }
+
+  _subscribeOnPopupEvents(movie) {
+    this._movieDetailsComponent.setOnCloseButtonClick(this._removeDetails);
+
+    this._movieDetailsComponent.setOnAddToWatchlistClick(() => {
+      this._onDataChange(movie, Object.assign({}, movie, {
+        userDetails: {
+          watchlist: !movie.userDetails.watchlist,
+          alreadyWatched: movie.userDetails.alreadyWatched,
+          watchingDate: movie.userDetails.watchingDate,
+          favorite: movie.userDetails.favorite
+        }
+      }));
+    });
+
+    this._movieDetailsComponent.setOnAlreadyWatchedClick(() => {
+      const alreadyWatched = !movie.userDetails.alreadyWatched;
+      const watchingDate = alreadyWatched ? Date.now() : null;
+
+      this._onDataChange(movie, Object.assign({}, movie, {
+        userDetails: {
+          watchlist: movie.userDetails.watchlist,
+          alreadyWatched,
+          watchingDate,
+          favorite: movie.userDetails.favorite
+        }
+      }));
+    });
+
+    this._movieDetailsComponent.setOnAddToFavoritesClick(() => {
+      this._onDataChange(movie, Object.assign({}, movie, {
+        userDetails: {
+          watchlist: movie.userDetails.watchlist,
+          alreadyWatched: movie.userDetails.alreadyWatched,
+          watchingDate: movie.userDetails.watchingDate,
+          favorite: !movie.userDetails.favorite
+        }
+      }));
+    });
   }
 }
