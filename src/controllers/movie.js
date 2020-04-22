@@ -24,54 +24,12 @@ export default class MovieController {
     this._movieCardComponent = new MovieCardComponent(movie);
     this._movieDetailsComponent = new MovieDetailsComponent(movie);
 
-    /* Добавляет обработчик клика, вызывающий показ попапа с подробной информацией о фильме */
-    this._movieCardComponent.setOnDetailsOpenersClick(() => {
-      render(document.body, this._movieDetailsComponent);
-      /* Добавляет обработчик клика, вызывающий удаление попапа с подробной информацией о фильме */
-      this._subscribeOnPopupEvents(movie);
-      document.addEventListener(`keydown`, this._onEscKeyDown);
-    });
-
-    this._movieCardComponent.setOnAddToWatchlistButtonClick(() => {
-      this._onDataChange(movie, Object.assign({}, movie, {
-        userDetails: {
-          watchlist: !movie.userDetails.watchlist,
-          alreadyWatched: movie.userDetails.alreadyWatched,
-          watchingDate: movie.userDetails.watchingDate,
-          favorite: movie.userDetails.favorite
-        }
-      }));
-    });
-
-    this._movieCardComponent.setOnAlreadyWatchedButtonClick(() => {
-      const alreadyWatched = !movie.userDetails.alreadyWatched;
-      const watchingDate = alreadyWatched ? Date.now() : null;
-
-      this._onDataChange(movie, Object.assign({}, movie, {
-        userDetails: {
-          watchlist: movie.userDetails.watchlist,
-          alreadyWatched,
-          watchingDate,
-          favorite: movie.userDetails.favorite
-        }
-      }));
-    });
-
-    this._movieCardComponent.setOnFavoriteButtonClick(() => {
-      this._onDataChange(movie, Object.assign({}, movie, {
-        userDetails: {
-          watchlist: movie.userDetails.watchlist,
-          alreadyWatched: movie.userDetails.alreadyWatched,
-          watchingDate: movie.userDetails.watchingDate,
-          favorite: !movie.userDetails.favorite
-        }
-      }));
-    });
+    this._subscribeOnCardEvents(movie);
 
     if (oldMovieCardComponent && oldMovieDetailsComponent) {
       replace(oldMovieCardComponent, this._movieCardComponent);
       replace(oldMovieDetailsComponent, this._movieDetailsComponent);
-      this._subscribeOnPopupEvents(movie);  
+      this._subscribeOnPopupEvents(movie);
     } else {
       render(this._container, this._movieCardComponent);
     }
@@ -90,43 +48,76 @@ export default class MovieController {
     }
   }
 
+  _subscribeOnCardEvents(movie) {
+    /* Добавляет обработчик клика, вызывающий показ попапа с подробной информацией о фильме */
+    this._movieCardComponent.setOnDetailsOpenersClick(() => {
+      render(document.body, this._movieDetailsComponent);
+      this._subscribeOnPopupEvents(movie);
+      document.addEventListener(`keydown`, this._onEscKeyDown);
+    });
+
+    this._movieCardComponent.setOnAddToWatchlistButtonClick(() => {
+      this._onWatchlistChange(movie);
+    });
+
+    this._movieCardComponent.setOnAlreadyWatchedButtonClick(() => {
+      this._onAlreadyWatchedChange(movie);
+    });
+
+    this._movieCardComponent.setOnFavoriteButtonClick(() => {
+      this._onFavoritesChange(movie);
+    });
+  }
+
   _subscribeOnPopupEvents(movie) {
     this._movieDetailsComponent.setOnCloseButtonClick(this._removeDetails);
 
     this._movieDetailsComponent.setOnAddToWatchlistClick(() => {
-      this._onDataChange(movie, Object.assign({}, movie, {
-        userDetails: {
-          watchlist: !movie.userDetails.watchlist,
-          alreadyWatched: movie.userDetails.alreadyWatched,
-          watchingDate: movie.userDetails.watchingDate,
-          favorite: movie.userDetails.favorite
-        }
-      }));
+      this._onWatchlistChange(movie);
     });
 
     this._movieDetailsComponent.setOnAlreadyWatchedClick(() => {
-      const alreadyWatched = !movie.userDetails.alreadyWatched;
-      const watchingDate = alreadyWatched ? Date.now() : null;
-
-      this._onDataChange(movie, Object.assign({}, movie, {
-        userDetails: {
-          watchlist: movie.userDetails.watchlist,
-          alreadyWatched,
-          watchingDate,
-          favorite: movie.userDetails.favorite
-        }
-      }));
+      this._onAlreadyWatchedChange(movie);
     });
 
     this._movieDetailsComponent.setOnAddToFavoritesClick(() => {
-      this._onDataChange(movie, Object.assign({}, movie, {
-        userDetails: {
-          watchlist: movie.userDetails.watchlist,
-          alreadyWatched: movie.userDetails.alreadyWatched,
-          watchingDate: movie.userDetails.watchingDate,
-          favorite: !movie.userDetails.favorite
-        }
-      }));
+      this._onFavoritesChange(movie);
     });
+  }
+
+  _onWatchlistChange(movie) {
+    this._onDataChange(movie, Object.assign({}, movie, {
+      userDetails: {
+        watchlist: !movie.userDetails.watchlist,
+        alreadyWatched: movie.userDetails.alreadyWatched,
+        watchingDate: movie.userDetails.watchingDate,
+        favorite: movie.userDetails.favorite
+      }
+    }));
+  }
+
+  _onAlreadyWatchedChange(movie) {
+    const alreadyWatched = !movie.userDetails.alreadyWatched;
+    const watchingDate = alreadyWatched ? Date.now() : null;
+
+    this._onDataChange(movie, Object.assign({}, movie, {
+      userDetails: {
+        watchlist: movie.userDetails.watchlist,
+        alreadyWatched,
+        watchingDate,
+        favorite: movie.userDetails.favorite
+      }
+    }));
+  }
+
+  _onFavoritesChange(movie) {
+    this._onDataChange(movie, Object.assign({}, movie, {
+      userDetails: {
+        watchlist: movie.userDetails.watchlist,
+        alreadyWatched: movie.userDetails.alreadyWatched,
+        watchingDate: movie.userDetails.watchingDate,
+        favorite: !movie.userDetails.favorite
+      }
+    }));
   }
 }
