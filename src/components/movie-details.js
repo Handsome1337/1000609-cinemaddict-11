@@ -220,7 +220,7 @@ export default class MovieDetails extends AbstractSmartComponent {
     this.getElement().querySelector(`.film-details__close-btn`)
       .addEventListener(`click`, handler);
 
-    this._currentEmoji = null;
+    this._selectedEmoji = null;
     this._setCloseButtonClickHandler = handler;
   }
 
