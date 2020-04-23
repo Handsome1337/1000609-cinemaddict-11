@@ -83,6 +83,8 @@ export default class MovieController {
     this._movieDetailsComponent.setOnAddToFavoritesClick(() => {
       this._onFavoritesChange(movie);
     });
+
+    this._movieDetailsComponent.setOnEmojiChange();
   }
 
   _onWatchlistChange(movie) {
