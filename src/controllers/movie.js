@@ -2,11 +2,18 @@ import MovieCardComponent from './../components/movie-card.js';
 import MovieDetailsComponent from './../components/movie-details.js';
 import {render, remove, replace} from './../utils/render.js';
 
+const Mode = {
+  DEFAULT: `default`,
+  DETAILS: `details`,
+};
+
 export default class MovieController {
-  constructor(container, onDataChange) {
+  constructor(container, onDataChange, onViewChange) {
     this.id = null;
     this._container = container;
+    this._mode = Mode.DEFAULT;
     this._onDataChange = onDataChange;
+    this._onViewChange = onViewChange;
 
     this._movieCardComponent = null;
     this._movieDetailsComponent = null;
@@ -35,9 +42,16 @@ export default class MovieController {
     }
   }
 
+  setDefaultView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._removeDetails();
+    }
+  }
+
   _removeDetails() {
     remove(this._movieDetailsComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
+    this._mode = Mode.DEFAULT;
   }
 
   _onEscKeyDown(evt) {
@@ -51,9 +65,11 @@ export default class MovieController {
   _subscribeOnCardEvents(movie) {
     /* Добавляет обработчик клика, вызывающий показ попапа с подробной информацией о фильме */
     this._movieCardComponent.setOnDetailsOpenersClick(() => {
+      this._onViewChange();
       render(document.body, this._movieDetailsComponent);
       this._subscribeOnPopupEvents(movie);
       document.addEventListener(`keydown`, this._onEscKeyDown);
+      this._mode = Mode.DETAILS;
     });
 
     this._movieCardComponent.setOnAddToWatchlistButtonClick(() => {
