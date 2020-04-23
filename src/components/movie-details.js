@@ -1,4 +1,4 @@
-import AbstractComponent from './abstract-component.js';
+import AbstractSmartComponent from './abstract-smart-component.js';
 import {formatRuntime, formatDate} from './../utils/common.js';
 
 const EMOTIONS = [`smile`, `sleeping`, `puke`, `angry`];
@@ -62,12 +62,14 @@ const createCommentsMarkup = (comments) => {
     }, ``);
 };
 
-const createReactionsMarkup = (emojis) => {
+const createSelectedEmojiMarkup = (emoji) => `<img src="images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">`;
+
+const createReactionsMarkup = (emojis, selectedEmoji) => {
   return emojis
     .reduce((acc, emoji, i) => {
       const newline = i === 0 ? `` : `\n`;
       const template = (
-        `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}">
+        `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}" ${emoji === selectedEmoji ? `checked` : ``}>
         <label class="film-details__emoji-label" for="emoji-${emoji}">
           <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="emoji">
         </label>`
@@ -76,8 +78,7 @@ const createReactionsMarkup = (emojis) => {
     }, ``);
 };
 
-
-const createMovieDetailsTemplate = (movie) => {
+const createMovieDetailsTemplate = (movie, emoji) => {
   const {title, alternativeTitle, totalRating: rating, poster, ageRating, director, writers,
     actors, release: {date, releaseCountry}, runtime, genre, description} = movie.filmInfo;
   const comments = movie.comments;
@@ -91,7 +92,8 @@ const createMovieDetailsTemplate = (movie) => {
   const genresMarkup = createGenresMarkup(genre);
   const controlsMarkup = createControlsMarkup(userDetails);
   const commentsMarkup = createCommentsMarkup(comments);
-  const reactionsMarkup = createReactionsMarkup(EMOTIONS);
+  const selectedEmojiMarkup = emoji ? createSelectedEmojiMarkup(emoji) : ``;
+  const reactionsMarkup = createReactionsMarkup(EMOTIONS, emoji);
 
   return (
     `<section class="film-details">
@@ -170,7 +172,9 @@ const createMovieDetailsTemplate = (movie) => {
             </ul>
 
             <div class="film-details__new-comment">
-              <div for="add-emoji" class="film-details__add-emoji-label"></div>
+              <div for="add-emoji" class="film-details__add-emoji-label">
+                ${selectedEmojiMarkup}
+              </div>
 
               <label class="film-details__comment-label">
                 <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
@@ -187,20 +191,69 @@ const createMovieDetailsTemplate = (movie) => {
   );
 };
 
-export default class MovieDetails extends AbstractComponent {
+export default class MovieDetails extends AbstractSmartComponent {
   constructor(movie) {
     super();
 
     this._movie = movie;
+    this._selectedEmoji = null;
+    this._setCloseButtonClickHandler = null;
+    this._setAddToWatchlistClickHandler = null;
+    this._alreadyWatchedClickHandler = null;
+    this._addToFavoritesClickHandler = null;
   }
 
   getTemplate() {
-    return createMovieDetailsTemplate(this._movie);
+    return createMovieDetailsTemplate(this._movie, this._selectedEmoji);
+  }
+
+  recoveryListeners() {
+    this.setOnCloseButtonClick(this._setCloseButtonClickHandler);
+    this.setOnAddToWatchlistClick(this._setAddToWatchlistClickHandler);
+    this.setOnAlreadyWatchedClick(this._alreadyWatchedClickHandler);
+    this.setOnAddToFavoritesClick(this._addToFavoritesClickHandler);
+    this.setOnEmojiChange();
   }
 
   setOnCloseButtonClick(handler) {
     /* Находит кнопку закрытия попапа */
     this.getElement().querySelector(`.film-details__close-btn`)
       .addEventListener(`click`, handler);
+
+    this._selectedEmoji = null;
+    this._setCloseButtonClickHandler = handler;
+  }
+
+  setOnAddToWatchlistClick(handler) {
+    this.getElement().querySelector(`#watchlist`)
+      .addEventListener(`click`, handler);
+
+    this._setAddToWatchlistClickHandler = handler;
+  }
+
+  setOnAlreadyWatchedClick(handler) {
+    this.getElement().querySelector(`#watched`)
+      .addEventListener(`click`, handler);
+
+    this._alreadyWatchedClickHandler = handler;
+  }
+
+  setOnAddToFavoritesClick(handler) {
+    this.getElement().querySelector(`#favorite`)
+      .addEventListener(`click`, handler);
+
+    this._addToFavoritesClickHandler = handler;
+  }
+
+  setOnEmojiChange() {
+    this.getElement().querySelector(`.film-details__inner`)
+      .addEventListener(`change`, (evt) => {
+        if (evt.target.name !== `comment-emoji`) {
+          return;
+        }
+
+        this._selectedEmoji = evt.target.value;
+        this.rerender();
+      });
   }
 }
