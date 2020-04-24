@@ -1,28 +1,18 @@
-const MINUTES_IN_HOUR = 60;
-const MONTH_NAMES = [`January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`, `September`, `October`, `November`, `December`];
+import moment from 'moment';
 
 const formatRuntime = (runtime) => {
-  const hours = Math.floor(runtime / MINUTES_IN_HOUR);
-  const minutes = runtime - hours * MINUTES_IN_HOUR;
+  const hours = moment.duration(runtime, `minutes`).hours();
+  const minutes = moment.duration(runtime, `minutes`).minutes();
 
   return hours ? `${hours}h ${minutes}m` : `${minutes}m`;
 };
 
-const castDateFormat = (value) => value < 10 ? `0${value}` : String(value);
-
 const formatDate = (date, format = false) => {
-  const year = date.getFullYear();
-
-  const month = date.getMonth();
-  const day = castDateFormat(date.getDate());
-  const hour = date.getHours();
-  const minute = castDateFormat(date.getMinutes());
-
   if (format === `comment`) {
-    return `${year}/${castDateFormat(month + 1)}/${day} ${hour}:${minute}`;
+    return moment(date).format(`YYYY/MM/DD HH:mm`);
   }
 
-  return format ? `${day} ${MONTH_NAMES[month]} ${year}` : `${year}`;
+  return format ? moment(date).format(`DD MMMM YYYY`) : moment(date).year();
 };
 
 export {formatRuntime, formatDate};
