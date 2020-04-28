@@ -48,6 +48,12 @@ export default class MovieController {
     }
   }
 
+  destroy() {
+    remove(this._movieCardComponent);
+    remove(this._movieDetailsComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
+  }
+
   _removeDetails() {
     remove(this._movieDetailsComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
