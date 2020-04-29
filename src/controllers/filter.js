@@ -10,7 +10,10 @@ export default class Filter {
     this._activeFilterType = FilterType.ALL;
     this._siteMenuComponent = null;
 
+    this._onDataChange = this._onDataChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
+
+    this._moviesModel.setDataChangeHandler(this._onDataChange);
   }
 
   render() {
@@ -39,5 +42,9 @@ export default class Filter {
   _onFilterChange(filterType) {
     this._moviesModel.setFilter(filterType);
     this._activeFilterType = filterType;
+  }
+
+  _onDataChange() {
+    this.render();
   }
 }
