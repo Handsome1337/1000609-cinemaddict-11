@@ -40,6 +40,18 @@ export default class Movies {
     return true;
   }
 
+  removeComment(commentId, movie) {
+    const index = movie.comments.findIndex((it) => it.id === commentId);
+
+    if (index === -1) {
+      return false;
+    }
+
+    movie.comments = [...movie.comments.slice(0, index), ...movie.comments.slice(index + 1)];
+
+    return this.updateMovie(movie.id, movie);
+  }
+
   setFilterChangeHandler(handler) {
     this._filterChangeHandlers.push(handler);
   }

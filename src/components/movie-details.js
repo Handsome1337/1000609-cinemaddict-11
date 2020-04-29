@@ -41,10 +41,10 @@ const createControlsMarkup = (userDetails) => {
 
 const createCommentsMarkup = (comments) => {
   return comments
-    .reduce((acc, {author, comment, date, emotion}, i) => {
+    .reduce((acc, {id, author, comment, date, emotion}, i) => {
       const newline = i === 0 ? `` : `\n`;
       const template = (
-        `<li class="film-details__comment">
+        `<li data-id="${id}" class="film-details__comment">
           <span class="film-details__comment-emoji">
             <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
           </span>
@@ -201,6 +201,7 @@ export default class MovieDetails extends AbstractSmartComponent {
     this._setAddToWatchlistClickHandler = null;
     this._alreadyWatchedClickHandler = null;
     this._addToFavoritesClickHandler = null;
+    this._commentDeleteClickHandler = null;
   }
 
   getTemplate() {
@@ -212,6 +213,7 @@ export default class MovieDetails extends AbstractSmartComponent {
     this.setOnAddToWatchlistClick(this._setAddToWatchlistClickHandler);
     this.setOnAlreadyWatchedClick(this._alreadyWatchedClickHandler);
     this.setOnAddToFavoritesClick(this._addToFavoritesClickHandler);
+    this.setOnCommentDeleteClick(this._commentDeleteClickHandler);
     this.setOnEmojiChange();
   }
 
@@ -243,6 +245,21 @@ export default class MovieDetails extends AbstractSmartComponent {
       .addEventListener(`click`, handler);
 
     this._addToFavoritesClickHandler = handler;
+  }
+
+  setOnCommentDeleteClick(handler) {
+    this.getElement().querySelectorAll(`.film-details__comment-delete`)
+      .forEach((button) => button.addEventListener(`click`, (evt) => {
+        evt.preventDefault();
+
+        const commentElement = button.closest(`.film-details__comment`);
+        const commentId = commentElement.dataset.id;
+
+        commentElement.remove();
+        handler(commentId);
+      }));
+
+    this._commentDeleteClickHandler = handler;
   }
 
   setOnEmojiChange() {

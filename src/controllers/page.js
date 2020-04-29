@@ -134,6 +134,14 @@ export default class PageController {
   }
 
   _renderMostCommentedMovies() {
+    /* Так как блок Most commented должен обновлятся при взаимодействии пользователя с комментариями, при рендеринге необходимо удалять блок, если он был отрисован ранее */
+    const mostCommentedTitleElement = [...this._container.getElement().querySelectorAll(`.films-list__title`)]
+      .find((listTitle) => listTitle.textContent.includes(`Most commented`));
+
+    if (mostCommentedTitleElement) {
+      mostCommentedTitleElement.parentElement.remove();
+    }
+
     const mostCommentedMovies = this._moviesModel.getAllMovies()
       .filter((movie) => movie.comments.length)
       .sort((a, b) => b.comments.length - a.comments.length)
@@ -147,13 +155,28 @@ export default class PageController {
   }
 
   _onDataChange(oldData, newData) {
-    const isSuccess = this._moviesModel.updateMovie(oldData.id, newData);
+    /* newData === null в случае, когда необходимо удалить комментарий */
+    if (newData === null) {
+      const {movie, commentId} = oldData;
+      const isSucess = this._moviesModel.removeComment(commentId, movie);
 
-    if (isSuccess) {
-      /* Находит все карточки, которые необходимо обновить */
-      this._showedMovieControllers.concat(this._extraMovieControllers)
-        .filter(({id}) => id === oldData.id)
-        .forEach((movieController) => movieController.render(newData));
+      if (isSucess) {
+        /* Находит все карточки, которые необходимо обновить */
+        this._showedMovieControllers.concat(this._extraMovieControllers)
+          .filter(({id}) => id === movie.id)
+          .forEach((movieController) => movieController.render(this._moviesModel.getAllMovies().find((it) => it.id === movie.id)));
+
+        this._renderMostCommentedMovies();
+      }
+    } else {
+      const isSuccess = this._moviesModel.updateMovie(oldData.id, newData);
+
+      if (isSuccess) {
+        /* Находит все карточки, которые необходимо обновить */
+        this._showedMovieControllers.concat(this._extraMovieControllers)
+          .filter(({id}) => id === oldData.id)
+          .forEach((movieController) => movieController.render(newData));
+      }
     }
   }
 
