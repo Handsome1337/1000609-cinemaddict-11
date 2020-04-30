@@ -52,6 +52,12 @@ export default class Movies {
     return this.updateMovie(movie.id, movie);
   }
 
+  addComment(comment, movie) {
+    movie.comments = [...movie.comments, comment];
+
+    return this.updateMovie(movie.id, movie);
+  }
+
   setFilterChangeHandler(handler) {
     this._filterChangeHandlers.push(handler);
   }

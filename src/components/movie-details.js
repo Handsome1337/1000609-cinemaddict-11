@@ -191,6 +191,15 @@ const createMovieDetailsTemplate = (movie, emoji) => {
   );
 };
 
+const parseFormData = (formData) => {
+  return {
+    id: String(new Date() + Math.random()),
+    comment: formData.get(`comment`),
+    date: Date.now(),
+    emotion: formData.get(`comment-emoji`)
+  };
+};
+
 export default class MovieDetails extends AbstractSmartComponent {
   constructor(movie) {
     super();
@@ -202,6 +211,8 @@ export default class MovieDetails extends AbstractSmartComponent {
     this._alreadyWatchedClickHandler = null;
     this._addToFavoritesClickHandler = null;
     this._commentDeleteClickHandler = null;
+
+    this.getData = this.getData.bind(this);
   }
 
   getTemplate() {
@@ -272,5 +283,15 @@ export default class MovieDetails extends AbstractSmartComponent {
         this._selectedEmoji = evt.target.value;
         this.rerender();
       });
+  }
+
+  getData() {
+    const form = this.getElement().querySelector(`.film-details__inner`);
+    const formData = new FormData(form);
+
+    return {
+      comment: parseFormData(formData),
+      movie: this._movie
+    };
   }
 }
