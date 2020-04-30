@@ -1,5 +1,6 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
 import {formatRuntime, formatDate} from './../utils/common.js';
+import {encode} from 'he';
 
 const EMOTIONS = [`smile`, `sleeping`, `puke`, `angry`];
 
@@ -194,7 +195,7 @@ const createMovieDetailsTemplate = (movie, emoji) => {
 const parseFormData = (formData) => {
   return {
     id: String(new Date() + Math.random()),
-    comment: formData.get(`comment`),
+    comment: encode(formData.get(`comment`)),
     date: Date.now(),
     emotion: formData.get(`comment-emoji`)
   };
