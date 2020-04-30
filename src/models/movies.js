@@ -5,8 +5,8 @@ export default class Movies {
     this._movies = [];
     this._activeFilterType = FilterType.ALL;
 
-    this._dataChangeHandlers = [];
-    this._filterChangeHandlers = [];
+    this._dataChangeHandlers = null;
+    this._filterChangeHandlers = null;
   }
 
   getAllMovies() {
@@ -23,7 +23,7 @@ export default class Movies {
 
   setFilter(filterType) {
     this._activeFilterType = filterType;
-    this._callHandlers(this._filterChangeHandlers);
+    this._filterChangeHandler();
   }
 
   updateMovie(id, movie) {
@@ -35,7 +35,7 @@ export default class Movies {
 
     this._movies = [...this._movies.slice(0, index), movie, ...this._movies.slice(index + 1)];
 
-    this._callHandlers(this._dataChangeHandlers);
+    this._dataChangeHandler();
 
     return true;
   }
@@ -59,14 +59,10 @@ export default class Movies {
   }
 
   setFilterChangeHandler(handler) {
-    this._filterChangeHandlers.push(handler);
+    this._filterChangeHandler = handler;
   }
 
   setDataChangeHandler(handler) {
-    this._dataChangeHandlers.push(handler);
-  }
-
-  _callHandlers(handlers) {
-    handlers.forEach((handler) => handler());
+    this._dataChangeHandler = handler;
   }
 }
