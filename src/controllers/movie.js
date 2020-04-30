@@ -20,6 +20,7 @@ export default class MovieController {
 
     this._removeDetails = this._removeDetails.bind(this);
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
+    this._onAddNewComment = this._onAddNewComment.bind(this);
   }
 
   render(movie) {
@@ -48,9 +49,17 @@ export default class MovieController {
     }
   }
 
+  destroy() {
+    remove(this._movieCardComponent);
+    remove(this._movieDetailsComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
+    document.removeEventListener(`keydown`, this._onAddNewComment);
+  }
+
   _removeDetails() {
     remove(this._movieDetailsComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
+    document.removeEventListener(`keydown`, this._onAddNewComment);
     this._mode = Mode.DEFAULT;
   }
 
@@ -69,6 +78,7 @@ export default class MovieController {
       render(document.body, this._movieDetailsComponent);
       this._subscribeOnPopupEvents(movie);
       document.addEventListener(`keydown`, this._onEscKeyDown);
+      document.addEventListener(`keydown`, this._onAddNewComment);
       this._mode = Mode.DETAILS;
     });
 
@@ -98,6 +108,10 @@ export default class MovieController {
 
     this._movieDetailsComponent.setOnAddToFavoritesClick(() => {
       this._onFavoritesChange(movie);
+    });
+
+    this._movieDetailsComponent.setOnCommentDeleteClick((commentId) => {
+      this._onDataChange({movie, commentId}, null);
     });
 
     this._movieDetailsComponent.setOnEmojiChange();
@@ -137,5 +151,21 @@ export default class MovieController {
         favorite: !movie.userDetails.favorite
       }
     }));
+  }
+
+  _onAddNewComment(evt) {
+    const isMac = navigator.platform.indexOf(`Mac`) >= 0;
+    const isCombination = evt.key === `Enter` && (isMac ? evt.metaKey || evt.ctrlKey : evt.ctrlKey);
+
+    if (isCombination) {
+      const {comment, movie} = this._movieDetailsComponent.getData();
+
+      /* Если не заполнен текст комментария либо не выбрана эмоция, метод завершает работу */
+      if (Object.values(comment).some((prop) => !prop)) {
+        return;
+      }
+
+      this._onDataChange(null, {comment, movie});
+    }
   }
 }
