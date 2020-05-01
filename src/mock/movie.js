@@ -14,9 +14,9 @@ const getRandomDate = () => {
   const date = new Date();
 
   /* Чтобы в моках все фильмы не были от одной даты, создадим смещение даты выпуска фильма */
-  const year = getRandomInt(1977, 2019);
-  const month = getRandomInt(0, 11);
-  const day = getRandomInt(0, 28);
+  const year = 2020;
+  const month = 3;
+  const day = getRandomInt(0, 29);
 
   date.setFullYear(year, month, day);
 
