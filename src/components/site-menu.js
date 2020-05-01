@@ -57,7 +57,13 @@ export default class SiteMenu extends AbstractComponent {
 
         const filterName = tag === `A` ? getFilterName(target) : getFilterName(target.parentElement);
 
-        this.getElement().querySelector(`.main-navigation__item--active`).classList.remove(`main-navigation__item--active`);
+        const lastFilterLinkElement = this.getElement().querySelector(`.main-navigation__item--active`);
+
+        if (lastFilterLinkElement) {
+          lastFilterLinkElement.classList.remove(`main-navigation__item--active`);
+        } else {
+          this.getElement().querySelector(`.main-navigation__additional--active`).classList.remove(`main-navigation__additional--active`);
+        }
 
         if (tag === `A`) {
           target.classList.add(`main-navigation__item--active`);
@@ -66,6 +72,22 @@ export default class SiteMenu extends AbstractComponent {
         }
 
         handler(filterName);
+      });
+  }
+
+  setOnStatsClick(handler) {
+    this.getElement().querySelector(`.main-navigation__additional`)
+      .addEventListener(`click`, (evt) => {
+        evt.preventDefault();
+
+        if (evt.target.classList.contains(`main-navigation__additional--active`)) {
+          return;
+        }
+
+        this.getElement().querySelector(`.main-navigation__item--active`).classList.remove(`main-navigation__item--active`);
+        evt.target.classList.add(`main-navigation__additional--active`);
+
+        handler();
       });
   }
 }

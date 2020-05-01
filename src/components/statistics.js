@@ -214,6 +214,13 @@ export default class Statictics extends AbstractSmartComponent {
     this._renderChart();
   }
 
+  show(updatedMovies) {
+    super.show();
+    this._movies = updatedMovies;
+    this._filter = `all-time`;
+    this.rerender();
+  }
+
   _renderChart() {
     const statisticsCtx = this.getElement().querySelector(`.statistic__chart`);
     const movies = getMoviesByDateRange(this._movies, this._filter);
