@@ -117,15 +117,6 @@ export default class PageController {
     this._renderShowMoreButton();
   }
 
-  _updateMovie(movie) {
-    this._sortedMovies = this._sortedMovies.map((it) => {
-      if (it.id === movie.id) {
-        return movie;
-      }
-      return it;
-    });
-  }
-
   _renderShowMoreButton() {
     remove(this._showMoreButtonComponent);
 
@@ -204,7 +195,7 @@ export default class PageController {
       const isSuccess = this._moviesModel.updateMovie(oldData.id, newData);
 
       if (isSuccess) {
-        this._updateMovie(newData);
+        this._updateMovies();
         /* Находит все карточки, которые необходимо обновить */
         this._showedMovieControllers.concat(this._extraMovieControllers)
           .filter(({id}) => id === oldData.id)
