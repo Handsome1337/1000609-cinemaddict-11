@@ -1,5 +1,5 @@
 import UserRankComponent from './components/user-rank.js';
-import FilterController from './controllers/filter.js';
+import SiteMenuController from './controllers/site-menu.js';
 import MovieListComponent from './components/movie-list.js';
 import PageController from './controllers/page.js';
 import MovieCounterComponent from './components/movie-counter.js';
@@ -21,11 +21,11 @@ const siteMainElement = document.querySelector(`.main`);
 
 render(siteHeaderElement, new UserRankComponent(watchedMovies.length));
 
-const filterController = new FilterController(siteMainElement, moviesModel, () => {
+const siteMenuController = new SiteMenuController(siteMainElement, moviesModel, () => {
   statisticsComponent.hide();
   pageController.show();
 });
-filterController.render();
+siteMenuController.render();
 
 const movieListComponent = new MovieListComponent(moviesCount);
 const pageController = new PageController(movieListComponent, moviesModel);
@@ -40,7 +40,7 @@ const footerStatisticsElement = document.querySelector(`.footer__statistics`);
 
 render(footerStatisticsElement, new MovieCounterComponent(moviesCount));
 
-filterController.setOnStatsClick(() => {
+siteMenuController.setOnStatsClick(() => {
   pageController.hide();
   statisticsComponent.show(moviesModel.getAllMovies().filter(({userDetails: {alreadyWatched}}) => alreadyWatched));
 });

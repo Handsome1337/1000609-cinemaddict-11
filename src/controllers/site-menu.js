@@ -2,7 +2,7 @@ import SiteMenuComponent from './../components/site-menu.js';
 import {FilterType, getMoviesByFilter} from './../utils/filter.js';
 import {render, replace} from './../utils/render.js';
 
-export default class Filter {
+export default class SiteMenu {
   constructor(container, moviesModel, onPageChange) {
     this._container = container;
     this._moviesModel = moviesModel;
