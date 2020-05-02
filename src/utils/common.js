@@ -15,4 +15,16 @@ const formatDate = (date, format = false) => {
   return format ? moment(date).format(`DD MMMM YYYY`) : moment(date).year();
 };
 
-export {formatRuntime, formatDate};
+const formatRank = (watchedMoviesCount) => {
+  if (!watchedMoviesCount) {
+    return ``;
+  } else if (watchedMoviesCount <= 10) {
+    return `Novice`;
+  } else if (watchedMoviesCount > 10 && watchedMoviesCount <= 20) {
+    return `Fan`;
+  } else {
+    return `Movie Buff`;
+  }
+};
+
+export {formatRuntime, formatDate, formatRank};

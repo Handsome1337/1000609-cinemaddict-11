@@ -1,15 +1,8 @@
 import AbstractComponent from './abstract-component.js';
+import {formatRank} from './../utils/common.js';
 
 const createRankMarkup = (watchedMoviesCount) => {
-  const template = (text) => `<p class="profile__rating">${text}</p>`;
-
-  if (watchedMoviesCount <= 10) {
-    return template(`Novice`);
-  } else if (watchedMoviesCount > 10 && watchedMoviesCount <= 20) {
-    return template(`Fan`);
-  } else {
-    return template(`Movie Buff`);
-  }
+  return `<p class="profile__rating">${formatRank(watchedMoviesCount)}</p>`;
 };
 
 const createUserRankTemplate = (count) => {
