@@ -191,9 +191,8 @@ const createMovieDetailsTemplate = (movie) => {
 
 const parseFormData = (formData) => {
   return {
-    id: String(new Date() + Math.random()),
     comment: encode(formData.get(`comment`)),
-    date: Date.now(),
+    date: new Date().toISOString(),
     emotion: formData.get(`comment-emoji`)
   };
 };
@@ -244,11 +243,8 @@ export default class MovieDetails extends AbstractComponent {
     this.getElement().querySelectorAll(`.film-details__comment-delete`)
       .forEach((button) => button.addEventListener(`click`, (evt) => {
         evt.preventDefault();
+        const commentId = button.closest(`.film-details__comment`).dataset.id;
 
-        const commentElement = button.closest(`.film-details__comment`);
-        const commentId = commentElement.dataset.id;
-
-        commentElement.remove();
         handler(commentId);
       }));
 
@@ -272,7 +268,7 @@ export default class MovieDetails extends AbstractComponent {
 
     return {
       comment: parseFormData(formData),
-      movie: this._movie
+      movieId: this._movie.id
     };
   }
 }

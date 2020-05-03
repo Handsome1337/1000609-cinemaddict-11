@@ -178,29 +178,37 @@ export default class PageController {
     /* newData === null в случае, когда необходимо удалить комментарий */
     if (newData === null) {
       const {movie, commentId} = oldData;
-      const isSuccess = this._moviesModel.removeComment(commentId, movie);
 
-      if (isSuccess) {
-        /* Находит все карточки, которые необходимо обновить */
-        this._showedMovieControllers.concat(this._extraMovieControllers)
-          .filter(({id}) => id === movie.id)
-          .forEach((movieController) => movieController.render(this._moviesModel.getAllMovies().find((it) => it.id === movie.id)));
+      this._api.deleteComment(commentId)
+        .then(() => {
+          const isSuccess = this._moviesModel.removeComment(commentId, movie);
 
-        this._renderMostCommentedMovies();
-      }
+          if (isSuccess) {
+            /* Находит все карточки, которые необходимо обновить */
+            this._showedMovieControllers.concat(this._extraMovieControllers)
+              .filter(({id}) => id === movie.id)
+              .forEach((movieController) => movieController.render(this._moviesModel.getAllMovies().find((it) => it.id === movie.id)));
+
+            this._renderMostCommentedMovies();
+          }
+        });
     /* oldData === null в случае, когда необходимо добавить комментарий */
     } else if (oldData === null) {
-      const {movie, comment} = newData;
-      const isSuccess = this._moviesModel.addComment(comment, movie);
+      const {movieId, comment} = newData;
 
-      if (isSuccess) {
-        /* Находит все карточки, которые необходимо обновить */
-        this._showedMovieControllers.concat(this._extraMovieControllers)
-          .filter(({id}) => id === movie.id)
-          .forEach((movieController) => movieController.render(this._moviesModel.getAllMovies().find((it) => it.id === movie.id)));
+      this._api.addComment(movieId, comment)
+        .then((movie) => {
+          const isSuccess = this._moviesModel.addComment(movie.comments.pop(), movie);
 
-        this._renderMostCommentedMovies();
-      }
+          if (isSuccess) {
+            /* Находит все карточки, которые необходимо обновить */
+            this._showedMovieControllers.concat(this._extraMovieControllers)
+              .filter(({id}) => id === movieId)
+              .forEach((movieController) => movieController.render(this._moviesModel.getAllMovies().find((it) => it.id === movieId)));
+
+            this._renderMostCommentedMovies();
+          }
+        });
     } else {
       this._api.updateMovie(oldData.id, newData)
         .then((movieModel) => {

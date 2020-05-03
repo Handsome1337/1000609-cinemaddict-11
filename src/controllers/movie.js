@@ -148,14 +148,14 @@ export default class MovieController {
     const isCombination = evt.key === `Enter` && (isMac ? evt.metaKey || evt.ctrlKey : evt.ctrlKey);
 
     if (isCombination) {
-      const {comment, movie} = this._movieDetailsComponent.getData();
+      const {comment, movieId} = this._movieDetailsComponent.getData();
 
       /* Если не заполнен текст комментария либо не выбрана эмоция, метод завершает работу */
       if (Object.values(comment).some((prop) => !prop)) {
         return;
       }
 
-      this._onDataChange(null, {comment, movie});
+      this._onDataChange(null, {comment, movieId});
     }
   }
 }
