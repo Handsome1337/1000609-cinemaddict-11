@@ -9,8 +9,9 @@ import API from './api.js';
 import {render} from './utils/render.js';
 
 const AUTHORIZATION = `Basic 1337`;
+const END_POINT = `https://11.ecmascript.pages.academy/cinemaddict`;
 
-const api = new API(AUTHORIZATION);
+const api = new API(END_POINT, AUTHORIZATION);
 const moviesModel = new MoviesModel();
 
 const siteHeaderElement = document.querySelector(`.header`);
@@ -32,7 +33,7 @@ api.getMovies()
     siteMenuController.render();
 
     const movieListComponent = new MovieListComponent(moviesCount);
-    const pageController = new PageController(movieListComponent, moviesModel);
+    const pageController = new PageController(movieListComponent, moviesModel, api);
     render(siteMainElement, movieListComponent);
     pageController.render();
 

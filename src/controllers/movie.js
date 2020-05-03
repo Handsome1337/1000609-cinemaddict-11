@@ -1,6 +1,8 @@
 import MovieCardComponent from './../components/movie-card.js';
 import MovieDetailsComponent from './../components/movie-details.js';
+import MovieModel from './../models/movie.js';
 import {render, remove, replace} from './../utils/render.js';
+
 
 const Mode = {
   DEFAULT: `default`,
@@ -82,15 +84,18 @@ export default class MovieController {
       this._mode = Mode.DETAILS;
     });
 
-    this._movieCardComponent.setOnAddToWatchlistButtonClick(() => {
+    this._movieCardComponent.setOnAddToWatchlistButtonClick((evt) => {
+      evt.preventDefault();
       this._onWatchlistChange(movie);
     });
 
-    this._movieCardComponent.setOnAlreadyWatchedButtonClick(() => {
+    this._movieCardComponent.setOnAlreadyWatchedButtonClick((evt) => {
+      evt.preventDefault();
       this._onAlreadyWatchedChange(movie);
     });
 
-    this._movieCardComponent.setOnFavoriteButtonClick(() => {
+    this._movieCardComponent.setOnFavoriteButtonClick((evt) => {
+      evt.preventDefault();
       this._onFavoritesChange(movie);
     });
   }
@@ -118,39 +123,24 @@ export default class MovieController {
   }
 
   _onWatchlistChange(movie) {
-    this._onDataChange(movie, Object.assign({}, movie, {
-      userDetails: {
-        watchlist: !movie.userDetails.watchlist,
-        alreadyWatched: movie.userDetails.alreadyWatched,
-        watchingDate: movie.userDetails.watchingDate,
-        favorite: movie.userDetails.favorite
-      }
-    }));
+    const newMovie = MovieModel.clone(movie);
+    newMovie.userDetails.watchlist = !newMovie.userDetails.watchlist;
+    this._onDataChange(movie, newMovie);
   }
 
   _onAlreadyWatchedChange(movie) {
-    const alreadyWatched = !movie.userDetails.alreadyWatched;
-    const watchingDate = alreadyWatched ? Date.now() : null;
+    const newMovie = MovieModel.clone(movie);
+    newMovie.userDetails.alreadyWatched = !newMovie.userDetails.alreadyWatched;
+    newMovie.userDetails.watchingDate = newMovie.userDetails.alreadyWatched ? new Date().toISOString() : null;
 
-    this._onDataChange(movie, Object.assign({}, movie, {
-      userDetails: {
-        watchlist: movie.userDetails.watchlist,
-        alreadyWatched,
-        watchingDate,
-        favorite: movie.userDetails.favorite
-      }
-    }));
+    this._onDataChange(movie, newMovie);
   }
 
   _onFavoritesChange(movie) {
-    this._onDataChange(movie, Object.assign({}, movie, {
-      userDetails: {
-        watchlist: movie.userDetails.watchlist,
-        alreadyWatched: movie.userDetails.alreadyWatched,
-        watchingDate: movie.userDetails.watchingDate,
-        favorite: !movie.userDetails.favorite
-      }
-    }));
+    const newMovie = MovieModel.clone(movie);
+    newMovie.userDetails.favorite = !movie.userDetails.favorite;
+
+    this._onDataChange(movie, newMovie);
   }
 
   _onAddNewComment(evt) {
