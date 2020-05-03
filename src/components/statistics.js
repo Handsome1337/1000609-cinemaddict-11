@@ -44,8 +44,7 @@ const getMoviesByDateRange = (movies, period) => {
   }
 
   return movies.filter((movie) => {
-    const watchingDate = movie.userDetails.watchingDate;
-
+    const watchingDate = new Date(movie.userDetails.watchingDate);
     return dateFrom ? watchingDate >= dateFrom && watchingDate <= new Date() : movie;
   });
 };
