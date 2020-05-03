@@ -37,9 +37,10 @@ const getSortedMovies = (movies, sortType) => {
 };
 
 export default class PageController {
-  constructor(container, moviesModel) {
+  constructor(container, moviesModel, api) {
     this._container = container;
     this._moviesModel = moviesModel;
+    this._api = api;
 
     this._showedMovieControllers = [];
     /* Сохраняет контроллеры фильмов из дополнительных блоков отдельно, чтобы при сортировки и сбросе _showedMovieControllers они не удалялись */
@@ -117,6 +118,15 @@ export default class PageController {
     this._renderShowMoreButton();
   }
 
+  _updateMovie(movie) {
+    this._sortedMovies = this._sortedMovies.map((it) => {
+      if (it.id === movie.id) {
+        return movie;
+      }
+      return it;
+    });
+  }
+
   _renderShowMoreButton() {
     remove(this._showMoreButtonComponent);
 
@@ -168,39 +178,50 @@ export default class PageController {
     /* newData === null в случае, когда необходимо удалить комментарий */
     if (newData === null) {
       const {movie, commentId} = oldData;
-      const isSuccess = this._moviesModel.removeComment(commentId, movie);
 
-      if (isSuccess) {
-        /* Находит все карточки, которые необходимо обновить */
-        this._showedMovieControllers.concat(this._extraMovieControllers)
-          .filter(({id}) => id === movie.id)
-          .forEach((movieController) => movieController.render(this._moviesModel.getAllMovies().find((it) => it.id === movie.id)));
+      this._api.deleteComment(commentId)
+        .then(() => {
+          const isSuccess = this._moviesModel.removeComment(commentId, movie);
 
-        this._renderMostCommentedMovies();
-      }
+          if (isSuccess) {
+            /* Находит все карточки, которые необходимо обновить */
+            this._showedMovieControllers.concat(this._extraMovieControllers)
+              .filter(({id}) => id === movie.id)
+              .forEach((movieController) => movieController.render(this._moviesModel.getAllMovies().find((it) => it.id === movie.id)));
+
+            this._renderMostCommentedMovies();
+          }
+        });
     /* oldData === null в случае, когда необходимо добавить комментарий */
     } else if (oldData === null) {
-      const {movie, comment} = newData;
-      const isSuccess = this._moviesModel.addComment(comment, movie);
+      const {movieId, comment} = newData;
 
-      if (isSuccess) {
-        /* Находит все карточки, которые необходимо обновить */
-        this._showedMovieControllers.concat(this._extraMovieControllers)
-          .filter(({id}) => id === movie.id)
-          .forEach((movieController) => movieController.render(this._moviesModel.getAllMovies().find((it) => it.id === movie.id)));
+      this._api.addComment(movieId, comment)
+        .then((movie) => {
+          const isSuccess = this._moviesModel.addComment(movie.comments.pop(), movie);
 
-        this._renderMostCommentedMovies();
-      }
+          if (isSuccess) {
+            /* Находит все карточки, которые необходимо обновить */
+            this._showedMovieControllers.concat(this._extraMovieControllers)
+              .filter(({id}) => id === movieId)
+              .forEach((movieController) => movieController.render(this._moviesModel.getAllMovies().find((it) => it.id === movieId)));
+
+            this._renderMostCommentedMovies();
+          }
+        });
     } else {
-      const isSuccess = this._moviesModel.updateMovie(oldData.id, newData);
+      this._api.updateMovie(oldData.id, newData)
+        .then((movieModel) => {
+          const isSuccess = this._moviesModel.updateMovie(oldData.id, movieModel);
 
-      if (isSuccess) {
-        this._updateMovies();
-        /* Находит все карточки, которые необходимо обновить */
-        this._showedMovieControllers.concat(this._extraMovieControllers)
-          .filter(({id}) => id === oldData.id)
-          .forEach((movieController) => movieController.render(newData));
-      }
+          if (isSuccess) {
+            this._updateMovie(movieModel);
+            /* Находит все карточки, которые необходимо обновить */
+            this._showedMovieControllers.concat(this._extraMovieControllers)
+            .filter(({id}) => id === oldData.id)
+            .forEach((movieController) => movieController.render(movieModel));
+          }
+        });
     }
   }
 
