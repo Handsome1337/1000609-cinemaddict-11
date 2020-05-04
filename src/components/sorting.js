@@ -6,6 +6,8 @@ export const SortType = {
   RATING: `by rating`
 };
 
+const LINK_TAG = `A`;
+
 const createSortingTemplate = () => {
   return (
     `<ul class="sort">
@@ -35,7 +37,7 @@ export default class Sorting extends AbstractComponent {
     this.getElement().addEventListener(`click`, (evt) => {
       evt.preventDefault();
 
-      if (evt.target.tagName !== `A`) {
+      if (evt.target.tagName !== LINK_TAG) {
         return;
       }
 

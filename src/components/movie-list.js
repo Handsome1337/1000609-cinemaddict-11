@@ -1,9 +1,11 @@
 import AbstractComponent from './abstract-component.js';
 
+const NUMBER_TYPE = `number`;
+
 const createHeadlineMarkup = (moviesCount) => {
   let headlineMarkup = ``;
 
-  if (typeof moviesCount === `number`) {
+  if (typeof moviesCount === NUMBER_TYPE) {
     headlineMarkup = moviesCount ? `<h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>` : ``;
   } else {
     headlineMarkup = `<h2 class="films-list__title">Loading...</h2>`;

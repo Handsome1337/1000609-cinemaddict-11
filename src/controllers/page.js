@@ -8,6 +8,11 @@ import {RenderPosition, render, remove} from './../utils/render.js';
 const SHOWING_MOVIES_COUNT_ON_START = 5;
 const SHOWING_MOVIES_COUNT_BY_BUTTON = 5;
 const EXTRA_MOVIES_COUNT = 2;
+const ExtraBlock = {
+  TOP_RATED: `Top rated`,
+  MOST_COMMENTED: `Most commented`
+};
+const COMMENT_ELEMENT = `TEXTAREA`;
 
 const renderMovies = (movieListElement, movies, onDataChange, onViewChange) => {
   return movies.map((movie) => {
@@ -155,7 +160,7 @@ export default class PageController {
       .slice(0, EXTRA_MOVIES_COUNT);
 
     if (topRatedMovies.length) {
-      const extraMovieListComponent = new ExtraMovieListComponent(`Top rated`);
+      const extraMovieListComponent = new ExtraMovieListComponent(ExtraBlock.TOP_RATED);
       render(this._container.getElement(), extraMovieListComponent);
       this._renderMovies(topRatedMovies, extraMovieListComponent.getElement().querySelector(`.films-list__container`));
     }
@@ -164,7 +169,7 @@ export default class PageController {
   _renderMostCommentedMovies() {
     /* Так как блок Most commented должен обновлятся при взаимодействии пользователя с комментариями, при рендеринге необходимо удалять блок, если он был отрисован ранее */
     const mostCommentedTitleElement = [...this._container.getElement().querySelectorAll(`.films-list__title`)]
-      .find((listTitle) => listTitle.textContent.includes(`Most commented`));
+      .find((listTitle) => listTitle.textContent.includes(ExtraBlock.MOST_COMMENTED));
 
     if (mostCommentedTitleElement) {
       mostCommentedTitleElement.parentElement.remove();
@@ -176,7 +181,7 @@ export default class PageController {
       .slice(0, EXTRA_MOVIES_COUNT);
 
     if (mostCommentedMovies.length) {
-      const extraMovieListComponent = new ExtraMovieListComponent(`Most commented`);
+      const extraMovieListComponent = new ExtraMovieListComponent(ExtraBlock.MOST_COMMENTED);
       render(this._container.getElement(), extraMovieListComponent);
       this._renderMovies(mostCommentedMovies, extraMovieListComponent.getElement().querySelector(`.films-list__container`));
     }
@@ -227,7 +232,7 @@ export default class PageController {
           document.querySelectorAll(`[disabled]`).forEach((element) => {
             element.disabled = false;
 
-            if (element.tagName === `TEXTAREA`) {
+            if (element.tagName === COMMENT_ELEMENT) {
               element.style.boxShadow = `0 0 0 3px red`;
             }
           });

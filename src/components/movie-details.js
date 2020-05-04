@@ -3,6 +3,7 @@ import {formatRuntime, formatDate} from './../utils/common.js';
 import {encode} from 'he';
 
 const EMOTIONS = [`smile`, `sleeping`, `puke`, `angry`];
+const FORMAT_DATE_OPTION = `comment`;
 
 /* Содержит модификатор класса (который совпадает с атрибутами id и name) и текст для каждого инпута (ключи - свойства фильма, которые пользователь может изменять) */
 const inputPropsMap = new Map([
@@ -53,7 +54,7 @@ const createCommentsMarkup = (comments) => {
             <p class="film-details__comment-text">${comment}</p>
             <p class="film-details__comment-info">
               <span class="film-details__comment-author">${author}</span>
-              <span class="film-details__comment-day">${formatDate(date, `comment`)}</span>
+              <span class="film-details__comment-day">${formatDate(date, FORMAT_DATE_OPTION)}</span>
               <button class="film-details__comment-delete">Delete</button>
             </p>
           </div>

@@ -4,6 +4,8 @@ import MovieModel from './../models/movie.js';
 import {render, remove, replace} from './../utils/render.js';
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
+const SECOND = 1000;
+const COMMENT_ELEMENT = `TEXTAREA`;
 
 const Mode = {
   DEFAULT: `default`,
@@ -60,8 +62,8 @@ export default class MovieController {
   }
 
   shake() {
-    this._movieCardComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    this._movieDetailsComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._movieCardComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / SECOND}s`;
+    this._movieDetailsComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / SECOND}s`;
 
     setTimeout(() => {
       this._movieCardComponent.getElement().style.animation = ``;
@@ -170,7 +172,7 @@ export default class MovieController {
       formElements.forEach((element) => {
         element.disabled = true;
 
-        if (element.tagName === `TEXTAREA`) {
+        if (element.tagName === COMMENT_ELEMENT) {
           element.style.boxShadow = null;
         }
       });
