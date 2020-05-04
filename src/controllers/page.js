@@ -24,7 +24,7 @@ const getSortedMovies = (movies, sortType) => {
 
   switch (sortType) {
     case SortType.DATE:
-      sortedMovies = [...movies].sort((a, b) => b.filmInfo.release.date - a.filmInfo.release.date);
+      sortedMovies = [...movies].sort((a, b) => -a.filmInfo.release.date.localeCompare(b.filmInfo.release.date));
       break;
     case SortType.RATING:
       sortedMovies = [...movies].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
@@ -48,7 +48,7 @@ export default class PageController {
     this._showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
     this._sortingComponent = new SortingComponent();
     this._sortType = SortType.DEFAULT;
-    this._sortedMovies = this._moviesModel.getMovies();
+    this._sortedMovies = null;
     this._noMoviesComponent = new NoMoviesComponent();
     this._showMoreButtonComponent = new ShowMoreButtonComponent();
 
@@ -74,9 +74,17 @@ export default class PageController {
 
   render() {
     const container = this._container.getElement();
-    const movies = this._moviesModel.getMovies();
 
     render(container, this._sortingComponent, RenderPosition.BEFORE);
+
+    const isLoading = !!document.querySelector(`.films-list__title:not(.visually-hidden)`);
+
+    if (isLoading) {
+      return;
+    }
+
+    const movies = this._moviesModel.getMovies();
+    this._sortedMovies = movies;
 
     const movieListElement = container.querySelector(`.films-list`);
 

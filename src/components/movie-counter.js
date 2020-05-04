@@ -1,6 +1,6 @@
 import AbstractComponent from './abstract-component.js';
 
-const createMovieCounterTemplate = (count) => `<p>${count} movies inside</p>`;
+const createMovieCounterTemplate = (count) => `<p>${count ? count : `0`} movies inside</p>`;
 
 export default class MovieCounter extends AbstractComponent {
   constructor(count) {
