@@ -177,8 +177,7 @@ export default class PageController {
   _onDataChange(oldData, newData) {
     /* newData === null в случае, когда необходимо удалить комментарий */
     if (newData === null) {
-      const {movie, commentId} = oldData;
-
+      const {movie, commentId, button} = oldData;
       this._api.deleteComment(commentId)
         .then(() => {
           const isSuccess = this._moviesModel.removeComment(commentId, movie);
@@ -191,11 +190,17 @@ export default class PageController {
 
             this._renderMostCommentedMovies();
           }
+        })
+        .catch(() => {
+          button.disabled = false;
+          button.textContent = `Delete`;
+          this._showedMovieControllers.concat(this._extraMovieControllers)
+              .filter(({id}) => id === movie.id)
+              .forEach((movieController) => movieController.shake());
         });
     /* oldData === null в случае, когда необходимо добавить комментарий */
     } else if (oldData === null) {
-      const {movieId, comment} = newData;
-
+      const {movieId, comment, onAddNewComment} = newData;
       this._api.addComment(movieId, comment)
         .then((movie) => {
           const isSuccess = this._moviesModel.addComment(movie.comments.pop(), movie);
@@ -208,7 +213,24 @@ export default class PageController {
 
             this._renderMostCommentedMovies();
           }
+        })
+        .catch(() => {
+          /* Разблокирует форму и добавляет красную обводку полю ввода */
+          document.querySelectorAll(`[disabled]`).forEach((element) => {
+            element.disabled = false;
+
+            if (element.tagName === `TEXTAREA`) {
+              element.style.boxShadow = `0 0 0 3px red`;
+            }
+          });
+
+          this._showedMovieControllers.concat(this._extraMovieControllers)
+              .filter(({id}) => id === movieId)
+              .forEach((movieController) => movieController.shake());
         });
+
+      /* Восстанавливает обработчик отправки формы*/
+      document.addEventListener(`keydown`, onAddNewComment);
     } else {
       this._api.updateMovie(oldData.id, newData)
         .then((movieModel) => {
@@ -221,6 +243,11 @@ export default class PageController {
             .filter(({id}) => id === oldData.id)
             .forEach((movieController) => movieController.render(movieModel));
           }
+        })
+        .catch(() => {
+          this._showedMovieControllers.concat(this._extraMovieControllers)
+              .filter(({id}) => id === oldData.id)
+              .forEach((movieController) => movieController.shake());
         });
     }
   }

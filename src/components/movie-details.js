@@ -243,9 +243,11 @@ export default class MovieDetails extends AbstractComponent {
     this.getElement().querySelectorAll(`.film-details__comment-delete`)
       .forEach((button) => button.addEventListener(`click`, (evt) => {
         evt.preventDefault();
+        button.disabled = true;
+        button.textContent = `Deleting...`;
         const commentId = button.closest(`.film-details__comment`).dataset.id;
 
-        handler(commentId);
+        handler(commentId, button);
       }));
 
     this._commentDeleteClickHandler = handler;
@@ -267,6 +269,8 @@ export default class MovieDetails extends AbstractComponent {
     const formData = new FormData(form);
 
     return {
+      /* Элементы, которые нужно заблокировать при отправке нового комментария */
+      formElements: form.querySelectorAll(`input, textarea, button`),
       comment: parseFormData(formData),
       movieId: this._movie.id
     };
