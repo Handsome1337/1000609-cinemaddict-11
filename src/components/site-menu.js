@@ -1,6 +1,10 @@
 import AbstractComponent from './abstract-component.js';
 
 const MAIN_FILTER = `All movies`;
+const Tag = {
+  A: `A`,
+  SPAN: `SPAN`
+};
 
 const getFilterName = (element) => element.innerText.replace(/[0-9]/g, ``);
 
@@ -51,11 +55,11 @@ export default class SiteMenu extends AbstractComponent {
         const tag = target.tagName;
 
         /* Проверка на наличие класса нужна для того, чтобы фильтрация не выполнялась при клике на уже активный фильтр */
-        if ((tag !== `A` && tag !== `SPAN`) || (target.classList.contains(`main-navigation__item--active`) || target.parentElement.classList.contains(`main-navigation__item--active`))) {
+        if ((tag !== Tag.A && tag !== Tag.SPAN) || (target.classList.contains(`main-navigation__item--active`) || target.parentElement.classList.contains(`main-navigation__item--active`))) {
           return;
         }
 
-        const filterName = tag === `A` ? getFilterName(target) : getFilterName(target.parentElement);
+        const filterName = tag === Tag.A ? getFilterName(target) : getFilterName(target.parentElement);
 
         const lastFilterLinkElement = this.getElement().querySelector(`.main-navigation__item--active`);
 

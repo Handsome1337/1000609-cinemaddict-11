@@ -6,6 +6,7 @@ import moment from 'moment';
 
 const PERIODS = [`All time`, `Today`, `Week`, `Month`, `Year`];
 const BAR_HEIGHT = 50;
+const MAIN_FILTER = `all-time`;
 
 const getGenres = (movies) => {
   return movies.reduce((acc, {filmInfo: {genre}}) => {
@@ -191,7 +192,7 @@ export default class Statictics extends AbstractSmartComponent {
     super();
 
     this._movies = movies;
-    this._filter = `all-time`;
+    this._filter = MAIN_FILTER;
 
     this._chart = null;
 
@@ -216,7 +217,7 @@ export default class Statictics extends AbstractSmartComponent {
   show(updatedMovies) {
     super.show();
     this._movies = updatedMovies;
-    this._filter = `all-time`;
+    this._filter = MAIN_FILTER;
     this.rerender();
   }
 

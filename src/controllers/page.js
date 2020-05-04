@@ -8,6 +8,11 @@ import {RenderPosition, render, remove} from './../utils/render.js';
 const SHOWING_MOVIES_COUNT_ON_START = 5;
 const SHOWING_MOVIES_COUNT_BY_BUTTON = 5;
 const EXTRA_MOVIES_COUNT = 2;
+const ExtraBlock = {
+  TOP_RATED: `Top rated`,
+  MOST_COMMENTED: `Most commented`
+};
+const COMMENT_ELEMENT = `TEXTAREA`;
 
 const renderMovies = (movieListElement, movies, onDataChange, onViewChange) => {
   return movies.map((movie) => {
@@ -24,7 +29,7 @@ const getSortedMovies = (movies, sortType) => {
 
   switch (sortType) {
     case SortType.DATE:
-      sortedMovies = [...movies].sort((a, b) => b.filmInfo.release.date - a.filmInfo.release.date);
+      sortedMovies = [...movies].sort((a, b) => -a.filmInfo.release.date.localeCompare(b.filmInfo.release.date));
       break;
     case SortType.RATING:
       sortedMovies = [...movies].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
@@ -48,7 +53,7 @@ export default class PageController {
     this._showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
     this._sortingComponent = new SortingComponent();
     this._sortType = SortType.DEFAULT;
-    this._sortedMovies = this._moviesModel.getMovies();
+    this._sortedMovies = null;
     this._noMoviesComponent = new NoMoviesComponent();
     this._showMoreButtonComponent = new ShowMoreButtonComponent();
 
@@ -74,9 +79,17 @@ export default class PageController {
 
   render() {
     const container = this._container.getElement();
-    const movies = this._moviesModel.getMovies();
 
     render(container, this._sortingComponent, RenderPosition.BEFORE);
+
+    const isLoading = !!document.querySelector(`.films-list__title:not(.visually-hidden)`);
+
+    if (isLoading) {
+      return;
+    }
+
+    const movies = this._moviesModel.getMovies();
+    this._sortedMovies = movies;
 
     const movieListElement = container.querySelector(`.films-list`);
 
@@ -147,7 +160,7 @@ export default class PageController {
       .slice(0, EXTRA_MOVIES_COUNT);
 
     if (topRatedMovies.length) {
-      const extraMovieListComponent = new ExtraMovieListComponent(`Top rated`);
+      const extraMovieListComponent = new ExtraMovieListComponent(ExtraBlock.TOP_RATED);
       render(this._container.getElement(), extraMovieListComponent);
       this._renderMovies(topRatedMovies, extraMovieListComponent.getElement().querySelector(`.films-list__container`));
     }
@@ -156,7 +169,7 @@ export default class PageController {
   _renderMostCommentedMovies() {
     /* Так как блок Most commented должен обновлятся при взаимодействии пользователя с комментариями, при рендеринге необходимо удалять блок, если он был отрисован ранее */
     const mostCommentedTitleElement = [...this._container.getElement().querySelectorAll(`.films-list__title`)]
-      .find((listTitle) => listTitle.textContent.includes(`Most commented`));
+      .find((listTitle) => listTitle.textContent.includes(ExtraBlock.MOST_COMMENTED));
 
     if (mostCommentedTitleElement) {
       mostCommentedTitleElement.parentElement.remove();
@@ -168,7 +181,7 @@ export default class PageController {
       .slice(0, EXTRA_MOVIES_COUNT);
 
     if (mostCommentedMovies.length) {
-      const extraMovieListComponent = new ExtraMovieListComponent(`Most commented`);
+      const extraMovieListComponent = new ExtraMovieListComponent(ExtraBlock.MOST_COMMENTED);
       render(this._container.getElement(), extraMovieListComponent);
       this._renderMovies(mostCommentedMovies, extraMovieListComponent.getElement().querySelector(`.films-list__container`));
     }
@@ -177,8 +190,7 @@ export default class PageController {
   _onDataChange(oldData, newData) {
     /* newData === null в случае, когда необходимо удалить комментарий */
     if (newData === null) {
-      const {movie, commentId} = oldData;
-
+      const {movie, commentId, button} = oldData;
       this._api.deleteComment(commentId)
         .then(() => {
           const isSuccess = this._moviesModel.removeComment(commentId, movie);
@@ -191,11 +203,17 @@ export default class PageController {
 
             this._renderMostCommentedMovies();
           }
+        })
+        .catch(() => {
+          button.disabled = false;
+          button.textContent = `Delete`;
+          this._showedMovieControllers.concat(this._extraMovieControllers)
+              .filter(({id}) => id === movie.id)
+              .forEach((movieController) => movieController.shake());
         });
     /* oldData === null в случае, когда необходимо добавить комментарий */
     } else if (oldData === null) {
-      const {movieId, comment} = newData;
-
+      const {movieId, comment, onAddNewComment} = newData;
       this._api.addComment(movieId, comment)
         .then((movie) => {
           const isSuccess = this._moviesModel.addComment(movie.comments.pop(), movie);
@@ -208,7 +226,24 @@ export default class PageController {
 
             this._renderMostCommentedMovies();
           }
+        })
+        .catch(() => {
+          /* Разблокирует форму и добавляет красную обводку полю ввода */
+          document.querySelectorAll(`[disabled]`).forEach((element) => {
+            element.disabled = false;
+
+            if (element.tagName === COMMENT_ELEMENT) {
+              element.style.boxShadow = `0 0 0 3px red`;
+            }
+          });
+
+          this._showedMovieControllers.concat(this._extraMovieControllers)
+              .filter(({id}) => id === movieId)
+              .forEach((movieController) => movieController.shake());
         });
+
+      /* Восстанавливает обработчик отправки формы*/
+      document.addEventListener(`keydown`, onAddNewComment);
     } else {
       this._api.updateMovie(oldData.id, newData)
         .then((movieModel) => {
@@ -221,6 +256,11 @@ export default class PageController {
             .filter(({id}) => id === oldData.id)
             .forEach((movieController) => movieController.render(movieModel));
           }
+        })
+        .catch(() => {
+          this._showedMovieControllers.concat(this._extraMovieControllers)
+              .filter(({id}) => id === oldData.id)
+              .forEach((movieController) => movieController.shake());
         });
     }
   }

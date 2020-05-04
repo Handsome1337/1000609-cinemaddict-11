@@ -3,6 +3,9 @@ import MovieDetailsComponent from './../components/movie-details.js';
 import MovieModel from './../models/movie.js';
 import {render, remove, replace} from './../utils/render.js';
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+const SECOND = 1000;
+const COMMENT_ELEMENT = `TEXTAREA`;
 
 const Mode = {
   DEFAULT: `default`,
@@ -56,6 +59,16 @@ export default class MovieController {
     remove(this._movieDetailsComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
     document.removeEventListener(`keydown`, this._onAddNewComment);
+  }
+
+  shake() {
+    this._movieCardComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / SECOND}s`;
+    this._movieDetailsComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / SECOND}s`;
+
+    setTimeout(() => {
+      this._movieCardComponent.getElement().style.animation = ``;
+      this._movieDetailsComponent.getElement().style.animation = ``;
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   _removeDetails() {
@@ -115,8 +128,8 @@ export default class MovieController {
       this._onFavoritesChange(movie);
     });
 
-    this._movieDetailsComponent.setOnCommentDeleteClick((commentId) => {
-      this._onDataChange({movie, commentId}, null);
+    this._movieDetailsComponent.setOnCommentDeleteClick((commentId, button) => {
+      this._onDataChange({movie, commentId, button}, null);
     });
 
     this._movieDetailsComponent.setOnEmojiChange();
@@ -148,14 +161,25 @@ export default class MovieController {
     const isCombination = evt.key === `Enter` && (isMac ? evt.metaKey || evt.ctrlKey : evt.ctrlKey);
 
     if (isCombination) {
-      const {comment, movieId} = this._movieDetailsComponent.getData();
+      const {formElements, comment, movieId} = this._movieDetailsComponent.getData();
 
       /* Если не заполнен текст комментария либо не выбрана эмоция, метод завершает работу */
       if (Object.values(comment).some((prop) => !prop)) {
         return;
       }
 
-      this._onDataChange(null, {comment, movieId});
+      /* Блокирует форму и убирает красную обводку у поля ввода, если она была добавлена ранее */
+      formElements.forEach((element) => {
+        element.disabled = true;
+
+        if (element.tagName === COMMENT_ELEMENT) {
+          element.style.boxShadow = null;
+        }
+      });
+
+      /* Удаляем обработчик отправки формы, чтобы пользователь не мог отправить новый комментарий, пока не обработан старый */
+      document.removeEventListener(`keydown`, this._onAddNewComment);
+      this._onDataChange(null, {comment, movieId, onAddNewComment: this._onAddNewComment});
     }
   }
 }

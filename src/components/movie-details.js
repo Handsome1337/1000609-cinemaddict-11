@@ -3,6 +3,7 @@ import {formatRuntime, formatDate} from './../utils/common.js';
 import {encode} from 'he';
 
 const EMOTIONS = [`smile`, `sleeping`, `puke`, `angry`];
+const FORMAT_DATE_OPTION = `comment`;
 
 /* Содержит модификатор класса (который совпадает с атрибутами id и name) и текст для каждого инпута (ключи - свойства фильма, которые пользователь может изменять) */
 const inputPropsMap = new Map([
@@ -53,7 +54,7 @@ const createCommentsMarkup = (comments) => {
             <p class="film-details__comment-text">${comment}</p>
             <p class="film-details__comment-info">
               <span class="film-details__comment-author">${author}</span>
-              <span class="film-details__comment-day">${formatDate(date, `comment`)}</span>
+              <span class="film-details__comment-day">${formatDate(date, FORMAT_DATE_OPTION)}</span>
               <button class="film-details__comment-delete">Delete</button>
             </p>
           </div>
@@ -243,9 +244,11 @@ export default class MovieDetails extends AbstractComponent {
     this.getElement().querySelectorAll(`.film-details__comment-delete`)
       .forEach((button) => button.addEventListener(`click`, (evt) => {
         evt.preventDefault();
+        button.disabled = true;
+        button.textContent = `Deleting...`;
         const commentId = button.closest(`.film-details__comment`).dataset.id;
 
-        handler(commentId);
+        handler(commentId, button);
       }));
 
     this._commentDeleteClickHandler = handler;
@@ -267,6 +270,8 @@ export default class MovieDetails extends AbstractComponent {
     const formData = new FormData(form);
 
     return {
+      /* Элементы, которые нужно заблокировать при отправке нового комментария */
+      formElements: form.querySelectorAll(`input, textarea, button`),
       comment: parseFormData(formData),
       movieId: this._movie.id
     };

@@ -1,8 +1,24 @@
 import AbstractComponent from './abstract-component.js';
 
+const NUMBER_TYPE = `number`;
+
+const createHeadlineMarkup = (moviesCount) => {
+  let headlineMarkup = ``;
+
+  if (typeof moviesCount === NUMBER_TYPE) {
+    headlineMarkup = moviesCount ? `<h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>` : ``;
+  } else {
+    headlineMarkup = `<h2 class="films-list__title">Loading...</h2>`;
+  }
+
+  return headlineMarkup;
+};
+
+const createContainerMarkup = (moviesCount) => moviesCount ? `<div class="films-list__container">\n</div>` : ``;
+
 const createMovieListTemplate = (moviesCount) => {
-  const headlineMarkup = moviesCount ? `<h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>` : ``;
-  const movieListContainerMarkup = moviesCount ? `<div class="films-list__container">\n</div>` : ``;
+  const headlineMarkup = createHeadlineMarkup(moviesCount);
+  const movieListContainerMarkup = createContainerMarkup(moviesCount);
 
   return (
     `<section class="films">
@@ -24,5 +40,12 @@ export default class MovieList extends AbstractComponent {
 
   getTemplate() {
     return createMovieListTemplate(this._moviesCount);
+  }
+
+  onMoviesLoad(moviesCount) {
+    const headlineMarkup = createHeadlineMarkup(moviesCount);
+    const movieListContainerMarkup = createContainerMarkup(moviesCount);
+
+    this.getElement().firstElementChild.innerHTML = `${headlineMarkup}\n\n${movieListContainerMarkup}`;
   }
 }
