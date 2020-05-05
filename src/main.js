@@ -5,13 +5,15 @@ import PageController from './controllers/page.js';
 import MovieCounterComponent from './components/movie-counter.js';
 import StatisticsComponent from './components/statistics.js';
 import MoviesModel from './models/movies.js';
-import API from './api.js';
+import API from './api/index.js';
+import Provider from './api/provider.js';
 import {render, replace} from './utils/render.js';
 
 const AUTHORIZATION = `Basic 1337`;
 const END_POINT = `https://11.ecmascript.pages.academy/cinemaddict`;
 
 const api = new API(END_POINT, AUTHORIZATION);
+const apiWithProvider = new Provider(api);
 const moviesModel = new MoviesModel();
 
 const siteHeaderElement = document.querySelector(`.header`);
@@ -25,7 +27,7 @@ const siteMenuController = new SiteMenuController(siteMainElement, moviesModel, 
 siteMenuController.render();
 
 const movieListComponent = new MovieListComponent();
-const pageController = new PageController(movieListComponent, moviesModel, api);
+const pageController = new PageController(movieListComponent, moviesModel, apiWithProvider);
 render(siteMainElement, movieListComponent);
 pageController.render();
 
@@ -41,7 +43,7 @@ siteMenuController.setOnStatsClick(() => {
 const movieCounterComponent = new MovieCounterComponent();
 render(footerStatisticsElement, movieCounterComponent);
 
-api.getMovies()
+apiWithProvider.getMovies()
   .then((movies) => {
     moviesModel.setMovies(movies);
 
