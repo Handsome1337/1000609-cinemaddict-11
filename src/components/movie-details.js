@@ -273,7 +273,7 @@ export default class MovieDetails extends AbstractComponent {
       /* Элементы, которые нужно заблокировать при отправке нового комментария */
       formElements: form.querySelectorAll(`input, textarea, button`),
       comment: parseFormData(formData),
-      movieId: this._movie.id
+      movie: this._movie
     };
   }
 }

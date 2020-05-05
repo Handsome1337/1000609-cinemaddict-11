@@ -161,7 +161,7 @@ export default class MovieController {
     const isCombination = evt.key === `Enter` && (isMac ? evt.metaKey || evt.ctrlKey : evt.ctrlKey);
 
     if (isCombination) {
-      const {formElements, comment, movieId} = this._movieDetailsComponent.getData();
+      const {formElements, comment, movie} = this._movieDetailsComponent.getData();
 
       /* Если не заполнен текст комментария либо не выбрана эмоция, метод завершает работу */
       if (Object.values(comment).some((prop) => !prop)) {
@@ -179,7 +179,7 @@ export default class MovieController {
 
       /* Удаляем обработчик отправки формы, чтобы пользователь не мог отправить новый комментарий, пока не обработан старый */
       document.removeEventListener(`keydown`, this._onAddNewComment);
-      this._onDataChange(null, {comment, movieId, onAddNewComment: this._onAddNewComment});
+      this._onDataChange(null, {comment, movie, onAddNewComment: this._onAddNewComment});
     }
   }
 }
