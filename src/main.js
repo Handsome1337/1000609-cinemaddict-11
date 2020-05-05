@@ -5,13 +5,20 @@ import PageController from './controllers/page.js';
 import MovieCounterComponent from './components/movie-counter.js';
 import StatisticsComponent from './components/statistics.js';
 import MoviesModel from './models/movies.js';
-import API from './api.js';
+import API from './api/index.js';
+import Store from './api/store.js';
+import Provider from './api/provider.js';
 import {render, replace} from './utils/render.js';
 
 const AUTHORIZATION = `Basic 1337`;
 const END_POINT = `https://11.ecmascript.pages.academy/cinemaddict`;
+const STORE_PREFIX = `cinemaddict-handsome1337-localstorage`;
+const STORE_VER = `v1`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const api = new API(END_POINT, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
 const moviesModel = new MoviesModel();
 
 const siteHeaderElement = document.querySelector(`.header`);
@@ -25,7 +32,7 @@ const siteMenuController = new SiteMenuController(siteMainElement, moviesModel, 
 siteMenuController.render();
 
 const movieListComponent = new MovieListComponent();
-const pageController = new PageController(movieListComponent, moviesModel, api);
+const pageController = new PageController(movieListComponent, moviesModel, apiWithProvider);
 render(siteMainElement, movieListComponent);
 pageController.render();
 
@@ -41,7 +48,7 @@ siteMenuController.setOnStatsClick(() => {
 const movieCounterComponent = new MovieCounterComponent();
 render(footerStatisticsElement, movieCounterComponent);
 
-api.getMovies()
+apiWithProvider.getMovies()
   .then((movies) => {
     moviesModel.setMovies(movies);
 
@@ -61,3 +68,17 @@ api.getMovies()
     movieListComponent.onMoviesLoad(moviesCount);
     pageController.render();
   });
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`);
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+
+  apiWithProvider.sync();
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+});

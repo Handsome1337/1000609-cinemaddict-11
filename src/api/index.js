@@ -1,4 +1,4 @@
-import Movie from './models/movie.js';
+import Movie from './../models/movie.js';
 
 const Method = {
   GET: `GET`,
@@ -44,9 +44,9 @@ export default class API {
     return this._load({url: `/comments/${commentId}`, method: Method.DELETE});
   }
 
-  addComment(filmId, comment) {
+  addComment({id}, comment) {
     return this._load({
-      url: `/comments/${filmId}`,
+      url: `/comments/${id}`,
       method: Method.POST,
       body: JSON.stringify(comment),
       headers: new Headers({"Content-Type": `application/json`})})
@@ -57,6 +57,16 @@ export default class API {
 
         return parsedMovie;
       });
+  }
+
+  sync(data) {
+    return this._load({
+      url: `movies/sync`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({"Content-Type": `application/json`})
+    })
+      .then((response) => response.json());
   }
 
   _getComments(movie) {
@@ -75,4 +85,3 @@ export default class API {
       });
   }
 }
-
