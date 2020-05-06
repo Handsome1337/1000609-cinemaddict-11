@@ -26,6 +26,7 @@
     "he": "1.2.0",
     "human-names": "^1.0.11",
     "moment": "2.24.0",
-    "nanoid": "3.1.4"
+    "nanoid": "3.1.4",
+    "number-to-words": "1.2.4"
   }
 }
