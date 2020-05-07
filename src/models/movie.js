@@ -9,14 +9,14 @@ export default class Movie {
       poster: data[`film_info`][`poster`],
       ageRating: data[`film_info`][`age_rating`],
       director: data[`film_info`][`director`],
-      writers: new Set(data[`film_info`][`writers`]),
-      actors: new Set(data[`film_info`][`actors`]),
+      writers: data[`film_info`][`writers`],
+      actors: data[`film_info`][`actors`],
       release: {
         date: data[`film_info`][`release`][`date`],
         releaseCountry: data[`film_info`][`release`][`release_country`],
       },
       runtime: data[`film_info`][`runtime`],
-      genre: new Set(data[`film_info`][`genre`]),
+      genre: data[`film_info`][`genre`],
       description: data[`film_info`][`description`],
     };
     this.userDetails = {
@@ -27,32 +27,32 @@ export default class Movie {
     };
   }
 
-  toRAW(clone = false) {
+  static toRAW(data, clone = false) {
     return {
-      "id": this.id,
-      "comments": clone ? this.comments : this.comments.map(({id}) => id),
+      "id": data.id,
+      "comments": clone ? data.comments : data.comments.map(({id}) => id),
       "film_info": {
-        "title": this.filmInfo.title,
-        "alternative_title": this.filmInfo.alternativeTitle,
-        "total_rating": this.filmInfo.totalRating,
-        "poster": this.filmInfo.poster,
-        "age_rating": this.filmInfo.ageRating,
-        "director": this.filmInfo.director,
-        "writers": [...this.filmInfo.writers],
-        "actors": [...this.filmInfo.actors],
+        "title": data.filmInfo.title,
+        "alternative_title": data.filmInfo.alternativeTitle,
+        "total_rating": data.filmInfo.totalRating,
+        "poster": data.filmInfo.poster,
+        "age_rating": data.filmInfo.ageRating,
+        "director": data.filmInfo.director,
+        "writers": data.filmInfo.writers,
+        "actors": data.filmInfo.actors,
         "release": {
-          "date": this.filmInfo.release.date,
-          "release_country": this.filmInfo.release.releaseCountry
+          "date": data.filmInfo.release.date,
+          "release_country": data.filmInfo.release.releaseCountry
         },
-        "runtime": this.filmInfo.runtime,
-        "genre": [...this.filmInfo.genre],
-        "description": this.filmInfo.description
+        "runtime": data.filmInfo.runtime,
+        "genre": data.filmInfo.genre,
+        "description": data.filmInfo.description
       },
       "user_details": {
-        "watchlist": this.userDetails.watchlist,
-        "already_watched": this.userDetails.alreadyWatched,
-        "watching_date": this.userDetails.watchingDate,
-        "favorite": this.userDetails.favorite
+        "watchlist": data.userDetails.watchlist,
+        "already_watched": data.userDetails.alreadyWatched,
+        "watching_date": data.userDetails.watchingDate,
+        "favorite": data.userDetails.favorite
       }
     };
   }
@@ -66,6 +66,6 @@ export default class Movie {
   }
 
   static clone(data) {
-    return new Movie(data.toRAW(true));
+    return new Movie(this.toRAW(data, true));
   }
 }

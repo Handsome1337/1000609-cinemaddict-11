@@ -20,12 +20,35 @@ const inputPropsMap = new Map([
   }]
 ]);
 
+const createWritersMarkup = (writers) => {
+  if (!writers.length) {
+    return ``;
+  }
+
+  return (
+    `<tr class="film-details__row">
+      <td class="film-details__term">Writers</td>
+      <td class="film-details__cell">${writers.join(`, `)}</td>
+    </tr>`
+  );
+};
+
 const createGenresMarkup = (genres) => {
-  return [...genres]
-    .reduce((acc, genre, i) => {
-      const newline = i === 0 ? `` : `\n`;
-      return `${acc}${newline}<span class="film-details__genre">${genre}</span>`;
-    }, ``);
+  if (!genres.length) {
+    return ``;
+  }
+
+  const genreNames = genres.reduce((acc, genre, i) => {
+    const newline = i === 0 ? `` : `\n`;
+    return `${acc}${newline}<span class="film-details__genre">${genre}</span>`;
+  }, ``);
+
+  return (
+    `<tr class="film-details__row">
+      <td class="film-details__term">${genres.length === 1 ? `Genre` : `Genres`}</td>
+      <td class="film-details__cell">${genreNames}</td>
+    </tr>`
+  );
 };
 
 const createControlsMarkup = (userDetails) => {
@@ -85,11 +108,11 @@ const createMovieDetailsTemplate = (movie) => {
   const comments = movie.comments;
   const userDetails = movie.userDetails;
 
-  const formattedWriters = [...writers].join(`, `);
-  const formattedActors = [...actors].join(`, `);
+  const formattedActors = actors.join(`, `);
   const formattedDate = formatDate(date, true);
   const duration = formatRuntime(runtime);
 
+  const writersMarkup = createWritersMarkup(writers);
   const genresMarkup = createGenresMarkup(genre);
   const controlsMarkup = createControlsMarkup(userDetails);
   const commentsMarkup = createCommentsMarkup(comments);
@@ -126,10 +149,7 @@ const createMovieDetailsTemplate = (movie) => {
                   <td class="film-details__term">Director</td>
                   <td class="film-details__cell">${director}</td>
                 </tr>
-                <tr class="film-details__row">
-                  <td class="film-details__term">Writers</td>
-                  <td class="film-details__cell">${formattedWriters}</td>
-                </tr>
+                ${writersMarkup}
                 <tr class="film-details__row">
                   <td class="film-details__term">Actors</td>
                   <td class="film-details__cell">${formattedActors}</td>
@@ -146,10 +166,7 @@ const createMovieDetailsTemplate = (movie) => {
                   <td class="film-details__term">Country</td>
                   <td class="film-details__cell">${releaseCountry}</td>
                 </tr>
-                <tr class="film-details__row">
-                  <td class="film-details__term">${genre.size === 1 ? `Genre` : `Genres`}</td>
-                  <td class="film-details__cell">${genresMarkup}</td>
-                </tr>
+                ${genresMarkup}
               </table>
 
               <p class="film-details__film-description">

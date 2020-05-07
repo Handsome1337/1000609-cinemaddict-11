@@ -1,14 +1,7 @@
 import Movie from './../models/movie.js';
-import {nanoid} from 'nanoid';
-import humanNames from 'human-names';
 
 const isOnline = () => {
   return window.navigator.onLine;
-};
-
-const getSyncedMovies = (items) => {
-  return items.filter(({success}) => success)
-    .map(({payload}) => payload.task);
 };
 
 const createStoreStructure = (items) => {
@@ -29,11 +22,7 @@ export default class Provider {
     if (isOnline()) {
       return this._api.getMovies()
         .then((movies) => {
-          const items = movies.reduce((acc, current) => {
-            return Object.assign({}, acc, {
-              [current.id]: current,
-            });
-          }, {});
+          const items = createStoreStructure(movies);
 
           this._store.setItems(items);
 
@@ -43,73 +32,60 @@ export default class Provider {
 
     const storeMovies = Object.values(this._store.getItems());
 
-    return Promise.resolve(Movie.parseMovies(storeMovies));
+    return Promise.resolve(storeMovies);
   }
 
   updateMovie(id, data) {
     if (isOnline()) {
       return this._api.updateMovie(id, data)
         .then((newMovie) => {
-          this._store.setItem(newMovie.id, newMovie.toRAW());
+          this._store.setItem(newMovie.id, newMovie);
 
           return newMovie;
         });
     }
 
-    const localMovie = Movie.clone(Object.assign(data, {id}));
+    this._store.setItem(id, data);
 
-    this._store.setItem(id, localMovie.toRAW());
-
-    return Promise.resolve(localMovie);
+    return Promise.resolve(data);
   }
 
   deleteComment(commentId, movie) {
-    const localMovie = Movie.clone(Object.assign(Movie.clone(movie), movie, {comments: movie.comments.filter(({id}) => id !== commentId)}));
+    const localMovie = Object.assign({}, movie, {comments: movie.comments.filter(({id}) => id !== commentId)});
 
     if (isOnline()) {
       return this._api.deleteComment(commentId)
         .then(() => {
-          this._store.setItem(movie.id, localMovie.toRAW());
+          this._store.setItem(movie.id, localMovie);
         });
     }
 
-    this._store.setItem(movie.id, localMovie.toRAW());
-
-    return Promise.resolve();
+    return Promise.reject();
   }
 
   addComment(movie, comment) {
     if (isOnline()) {
       return this._api.addComment(movie, comment)
         .then((newMovie) => {
-          this._store.setItem(newMovie.id, newMovie.toRAW());
+          this._store.setItem(newMovie.id, newMovie);
 
           return newMovie;
         });
     }
 
-    const localNewCommentId = nanoid();
-    const localNewCommentAuthor = humanNames.allRandom();
-    const localMovie = Movie.clone(Object.assign(Movie.clone(movie), movie, {comments: [...movie.comments, Object.assign(comment, {id: localNewCommentId, author: localNewCommentAuthor})]}));
-
-    this._store.setItem(movie.id, localMovie.toRAW());
-
-    return Promise.resolve(localMovie);
+    return Promise.reject();
   }
 
   sync() {
     if (isOnline()) {
-      const storeMovies = Object.values(this._store.getItems());
+      const storeMovies = Object.values(this._store.getItems()).map(Movie.toRAW);
 
       return this._api.sync(storeMovies)
-        .then(({updated}) => {
-          const updatedMovies = getSyncedMovies(updated);
-          const items = createStoreStructure([...updatedMovies, ...storeMovies]);
-
-          this._store.setItems(items);
+        .then((response) => {
+          this._store.setItems(response);
         });
     }
 
-    return Promise.reject(new Error(`Sync data failed`));
+    return Promise.reject(new Error(`Сбой синхронизации данных`));
   }
 }
