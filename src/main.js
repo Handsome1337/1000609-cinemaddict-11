@@ -10,7 +10,7 @@ import Store from './api/store.js';
 import Provider from './api/provider.js';
 import {render, replace} from './utils/render.js';
 
-const AUTHORIZATION = `Basic 1337`;
+const AUTHORIZATION = `Basic IlyaV`;
 const END_POINT = `https://11.ecmascript.pages.academy/cinemaddict`;
 const STORE_PREFIX = `cinemaddict-handsome1337-localstorage`;
 const STORE_VER = `v1`;

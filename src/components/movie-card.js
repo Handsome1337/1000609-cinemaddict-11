@@ -53,7 +53,7 @@ const createMovieCardTemplate = (movie) => {
 
   const releaseYear = formatDate(date);
   const duration = formatRuntime(runtime);
-  const genreList = [...genre].join(`, `);
+  const genreList = genre.join(`, `);
 
   /* Если длина описания фильма превышает норму, форматирует его */
   const formattedDescription = isDescriptionExcess ? `${formatDescription(description.slice(0, DESCRIPTION_MAX_LENGTH - 1))}…` : description;
@@ -67,7 +67,7 @@ const createMovieCardTemplate = (movie) => {
       <p class="film-card__info">
         <span class="film-card__year">${releaseYear}</span>
         <span class="film-card__duration">${duration}</span>
-        <span class="film-card__genre">${genreList}</span>
+        ${genreList.length ? `<span class="film-card__genre">${genreList}</span>` : ``}
       </p>
       <img src="./${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${formattedDescription}</p>

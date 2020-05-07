@@ -11,7 +11,7 @@ const MAIN_FILTER = `all-time`;
 const getGenres = (movies) => {
   return movies.reduce((acc, {filmInfo: {genre}}) => {
     /* Пробегает по всем жанрам, к которым относится фильм. Если жанра нет в аккумуляторе, добавляет его */
-    [...genre].forEach((it) => {
+    genre.forEach((it) => {
       if (!acc.includes(it)) {
         acc.push(it);
       }
@@ -21,7 +21,7 @@ const getGenres = (movies) => {
 };
 
 /* Подсчитывает количество фильмов с переданным жанром */
-const getGenreValue = (genre, movies) => movies.filter(({filmInfo: {genre: movieGenres}}) => [...movieGenres].includes(genre)).length;
+const getGenreValue = (genre, movies) => movies.filter(({filmInfo: {genre: movieGenres}}) => movieGenres.includes(genre)).length;
 
 const getMoviesByDateRange = (movies, period) => {
   let dateFrom;

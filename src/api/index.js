@@ -32,7 +32,7 @@ export default class API {
     return this._load({
       url: `movies/${id}`,
       method: Method.PUT,
-      body: JSON.stringify(data.toRAW()),
+      body: JSON.stringify(Movie.toRAW(data)),
       headers: new Headers({"Content-Type": `application/json`})
     })
       .then((response) => response.json())
@@ -41,12 +41,12 @@ export default class API {
   }
 
   deleteComment(commentId) {
-    return this._load({url: `/comments/${commentId}`, method: Method.DELETE});
+    return this._load({url: `comments/${commentId}`, method: Method.DELETE});
   }
 
   addComment({id}, comment) {
     return this._load({
-      url: `/comments/${id}`,
+      url: `comments/${id}`,
       method: Method.POST,
       body: JSON.stringify(comment),
       headers: new Headers({"Content-Type": `application/json`})})
@@ -66,7 +66,9 @@ export default class API {
       body: JSON.stringify(data),
       headers: new Headers({"Content-Type": `application/json`})
     })
-      .then((response) => response.json());
+      .then((response) => response.json())
+      .then(({updated}) => Promise.all(updated.map((movie) => this._getComments(movie))))
+      .then(Movie.parseMovies);
   }
 
   _getComments(movie) {
