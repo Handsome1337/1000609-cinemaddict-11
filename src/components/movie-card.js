@@ -1,8 +1,10 @@
 import AbstractComponent from './abstract-component.js';
 import {formatRuntime, formatDate} from './../utils/common.js';
 
-const DESCRIPTION_MAX_LENGTH = 140;
-const DESCRIPTION_END_CHECK = /[\s.,]$/;
+const Description = {
+  MAX_LENGTH: 140,
+  END_CHECK: /[\s.,]$/
+};
 
 /* Содержит модификатор класса и текст для каждой кнопки (ключи - свойства фильма, которые пользователь может изменять) */
 const buttonPropsMap = new Map([
@@ -23,8 +25,8 @@ const buttonPropsMap = new Map([
 /* Удаляет символ пробела, точки или запятой, если краткое описание закончилось на один из этих символов */
 const formatDescription = (desc) => {
   let formattedDesc = desc;
-  if (DESCRIPTION_END_CHECK.test(formattedDesc)) {
-    formattedDesc = formatDescription(formattedDesc.replace(DESCRIPTION_END_CHECK, ``));
+  if (Description.END_CHECK.test(formattedDesc)) {
+    formattedDesc = formatDescription(formattedDesc.replace(Description.END_CHECK, ``));
   }
 
   return formattedDesc;
@@ -49,14 +51,14 @@ const createMovieCardTemplate = (movie) => {
   const userDetails = movie.userDetails;
 
   /* Проверяет, превышает ли описание фильма максимальный размер краткого описания */
-  const isDescriptionExcess = description.length > DESCRIPTION_MAX_LENGTH;
+  const isDescriptionExcess = description.length > Description.MAX_LENGTH;
 
   const releaseYear = formatDate(date);
   const duration = formatRuntime(runtime);
   const genreList = genre.join(`, `);
 
   /* Если длина описания фильма превышает норму, форматирует его */
-  const formattedDescription = isDescriptionExcess ? `${formatDescription(description.slice(0, DESCRIPTION_MAX_LENGTH - 1))}…` : description;
+  const formattedDescription = isDescriptionExcess ? `${formatDescription(description.slice(0, Description.MAX_LENGTH - 1))}…` : description;
 
   const buttonsMarkup = createButtonsMarkup(userDetails);
 

@@ -5,9 +5,12 @@ import ShowMoreButtonComponent from './../components/show-more-button.js';
 import ExtraMovieListComponent from './../components/extra-movie-list.js';
 import {RenderPosition, render, remove} from './../utils/render.js';
 
-const SHOWING_MOVIES_COUNT_ON_START = 5;
-const SHOWING_MOVIES_COUNT_BY_BUTTON = 5;
-const EXTRA_MOVIES_COUNT = 2;
+const ShowingMoviesCount = {
+  ON_START: 5,
+  BY_BUTTON: 5,
+  EXTRA: 2
+};
+
 const ExtraBlock = {
   TOP_RATED: `Top rated`,
   MOST_COMMENTED: `Most commented`
@@ -50,7 +53,7 @@ export default class PageController {
     this._showedMovieControllers = [];
     /* Сохраняет контроллеры фильмов из дополнительных блоков отдельно, чтобы при сортировки и сбросе _showedMovieControllers они не удалялись */
     this._extraMovieControllers = [];
-    this._showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
+    this._showingMoviesCount = ShowingMoviesCount.ON_START;
     this._sortingComponent = new SortingComponent();
     this._sortType = SortType.DEFAULT;
     this._sortedMovies = null;
@@ -127,7 +130,7 @@ export default class PageController {
   _updateMovies() {
     this._removeMovies();
     this._sortedMovies = getSortedMovies(this._moviesModel.getMovies(), this._sortType);
-    this._renderMovies(this._sortedMovies.slice(0, SHOWING_MOVIES_COUNT_ON_START));
+    this._renderMovies(this._sortedMovies.slice(0, ShowingMoviesCount.ON_START));
     this._renderShowMoreButton();
   }
 
@@ -157,7 +160,7 @@ export default class PageController {
     const topRatedMovies = this._moviesModel.getAllMovies()
       .filter((movie) => movie.filmInfo.totalRating)
       .sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating)
-      .slice(0, EXTRA_MOVIES_COUNT);
+      .slice(0, ShowingMoviesCount.EXTRA);
 
     if (topRatedMovies.length) {
       const extraMovieListComponent = new ExtraMovieListComponent(ExtraBlock.TOP_RATED);
@@ -178,7 +181,7 @@ export default class PageController {
     const mostCommentedMovies = this._moviesModel.getAllMovies()
       .filter((movie) => movie.comments.length)
       .sort((a, b) => b.comments.length - a.comments.length)
-      .slice(0, EXTRA_MOVIES_COUNT);
+      .slice(0, ShowingMoviesCount.EXTRA);
 
     if (mostCommentedMovies.length) {
       const extraMovieListComponent = new ExtraMovieListComponent(ExtraBlock.MOST_COMMENTED);
@@ -272,7 +275,7 @@ export default class PageController {
 
   _onSortTypeChange(sortType) {
     this._sortType = sortType;
-    this._showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
+    this._showingMoviesCount = ShowingMoviesCount.ON_START;
 
     this._sortedMovies = getSortedMovies(this._moviesModel.getMovies(), this._sortType);
 
@@ -284,7 +287,7 @@ export default class PageController {
 
   _onShowMoreButtonClick() {
     const prevMoviesCount = this._showingMoviesCount;
-    this._showingMoviesCount += SHOWING_MOVIES_COUNT_BY_BUTTON;
+    this._showingMoviesCount += ShowingMoviesCount.BY_BUTTON;
 
     this._renderMovies(this._sortedMovies.slice(prevMoviesCount, this._showingMoviesCount));
 
